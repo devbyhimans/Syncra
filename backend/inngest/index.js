@@ -37,16 +37,16 @@ const syncUserDeletion = inngest.createFunction(
   { event: "clerk/user.deleted" },
 
   async ({ event, step }) => {
-    const user = event.data; 
+    const user = event.data;
 
-    // SAFETY CHECK: Already existing, keeping it as is
-    if (!user?.id) {
-      console.error("Clerk user.deleted missing ID:", user);
+    if (!user || !user.id) {
       return;
     }
 
     await step.run("delete-user-in-db", async () => {
-      await prisma.user.delete({
+      // FIX: Use deleteMany instead of delete.
+      // deleteMany does NOT crash if the record is missing.
+      await prisma.user.deleteMany({
         where: {
           id: user.id,
         },
