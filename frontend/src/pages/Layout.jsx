@@ -6,30 +6,20 @@ import { useDispatch, useSelector } from 'react-redux'
 import { loadTheme } from '../features/themeSlice'
 import { Loader2Icon } from 'lucide-react'
 import { useUser,SignIn, useAuth, CreateOrganization } from '@clerk/clerk-react'
-import { fetchworkspaces } from '../features/workspaceSlice'
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-    const { loading,workspaces } = useSelector((state) => state.workspace)
+    const { loading } = useSelector((state) => state.workspace)
     const dispatch = useDispatch()
+    //getting the user from the clerk
     const {user,isLoaded} = useUser()
-    const {getToken} = useAuth();
-
-    
 
     // Initial load of theme
     useEffect(() => {
         dispatch(loadTheme())
     }, [])
-    
-    //Initial Workspaces load
-    useEffect(()=>{
-        if(isLoaded && user && workspaces.length==0){
-            dispatch(fetchworkspaces({getToken}))
-        }
-    },[user,isLoaded])
 
-    //if user not logged in
+    //if user not logged-in show sign In component
     if(!user){
         return (
             <div className='flex justify-center items-center h-screen bg-white/30 dark:bg-zinc-900/30 backdrop-blur-lg'>
@@ -43,14 +33,6 @@ const Layout = () => {
             <Loader2Icon className="size-7 text-blue-500 animate-spin" />
         </div>
     )
-
-    // if(user && workspaces.length==0){
-    //     return(
-    //         <div className='min-h-screen flex justify-center items-center'>
-    //             <CreateOrganization/>
-    //         </div>
-    //     )
-    // }
 
     return (
         <div className="flex bg-white dark:bg-zinc-950 text-gray-900 dark:text-slate-100">
