@@ -1,5 +1,6 @@
 import { err } from "inngest/types";
 import prisma from "../configs/prisma.js";
+import { inngest } from "../inngest/index.js";
 
 /*Whenever a new task is created we will send an email to all the task members. we will integrate sending email with inngest function for that we be using a package Nodemailer */
 //create task
@@ -38,6 +39,16 @@ export const createTask = async (req, res) => {
         assignee: true // Fetching assignee details immediately
       }
     });
+
+
+    //Triggering the inggest function to send email
+    await inngest.send({
+      name:"app/task.assigned",
+      data:{
+        taskId: task.id,
+        origin
+      }
+    })
 
     res.json({ task: task, message: "Task created successfully" });
 
