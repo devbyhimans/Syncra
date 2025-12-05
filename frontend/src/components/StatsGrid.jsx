@@ -2,7 +2,10 @@ import { FolderOpen, CheckCircle, Users, AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
+
+//function to show backend data on dashboard
 export default function StatsGrid() {
+    //getting current workspace
     const currentWorkspace = useSelector(
         (state) => state?.workspace?.currentWorkspace || null
     );

@@ -1,8 +1,17 @@
 import { useState } from "react";
 import { XIcon } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import api from "../configs/api.js";
+import { useAuth } from "@clerk/clerk-react";
+import { addProject } from "../features/workspaceSlice.js";
 
+
+//New project creation dailogue box
 const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
+    
+    const dispatch = useDispatch();
+    const {getToken} = useAuth();
 
     const { currentWorkspace } = useSelector((state) => state.workspace);
 
@@ -20,9 +29,42 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    //function to add form data in backend--form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+        try {
+            if(!formData.team_lead){
+                return toast.error("Please select a Team Lead")
+            }
+            setIsSubmitting(true);
+
+        //making api call to add data to be save in database + Authorization
+
+            // API call with nested 'headers' object
+            const { data } = await api.post(
+                "/api/projects",
+                { 
+                    workspaceId: currentWorkspace.id, 
+                    ...formData 
+                },
+                {
+                    // Authenciate the api request
+                    headers: {
+                        Authorization: `Bearer ${await getToken()}`,
+                    }
+                }
+            )
+
+            //calling the function to add data in State
+            dispatch(addProject(data.project))
+            //closing the dialogue box after submitting data
+            setIsDialogOpen(false);
+        } catch (error) {
+            toast.error(error?.response?.data?.message || error.message)
+        }
+        finally{
+            setIsSubmitting(false);
+        }
     };
 
     const removeTeamMember = (email) => {
