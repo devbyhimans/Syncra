@@ -2,8 +2,6 @@ import { FolderOpen, CheckCircle, Users, AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-
-//function to show backend data on dashboard
 export default function StatsGrid() {
     //getting current workspace
     const currentWorkspace = useSelector(
@@ -24,32 +22,32 @@ export default function StatsGrid() {
             title: "Total Projects",
             value: stats.totalProjects,
             subtitle: `projects in ${currentWorkspace?.name}`,
-            bgColor: "bg-blue-500/10",
-            textColor: "text-blue-500",
+            textColor: "text-blue-600 dark:text-blue-400",
+            glow: "bg-blue-500", // Added for the glow effect
         },
         {
             icon: CheckCircle,
             title: "Completed Projects",
             value: stats.completedProjects,
             subtitle: `of ${stats.totalProjects} total`,
-            bgColor: "bg-emerald-500/10",
-            textColor: "text-emerald-500",
+            textColor: "text-emerald-600 dark:text-emerald-400",
+            glow: "bg-emerald-500",
         },
         {
             icon: Users,
             title: "My Tasks",
             value: stats.myTasks,
             subtitle: "assigned to me",
-            bgColor: "bg-purple-500/10",
-            textColor: "text-purple-500",
+            textColor: "text-purple-600 dark:text-purple-400",
+            glow: "bg-purple-500",
         },
         {
             icon: AlertTriangle,
             title: "Overdue",
             value: stats.overdueIssues,
             subtitle: "need attention",
-            bgColor: "bg-amber-500/10",
-            textColor: "text-amber-500",
+            textColor: "text-amber-600 dark:text-amber-400",
+            glow: "bg-amber-500",
         },
     ];
 
@@ -83,26 +81,44 @@ export default function StatsGrid() {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 my-9">
             {statCards.map(
-                ({ icon: Icon, title, value, subtitle, bgColor, textColor }, i) => (
-                    <div key={i} className="bg-white dark:bg-zinc-950 dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition duration-200 rounded-md" >
-                        <div className="p-6 py-4">
-                            <div className="flex items-start justify-between">
-                                <div>
-                                    <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-1">
-                                        {title}
+                ({ icon: Icon, title, value, subtitle, textColor, glow }, i) => (
+                    <div
+                        key={i}
+                        className="group relative overflow-hidden rounded p-6 transition-all
+                        bg-white border border-zinc-200 hover:border-zinc-300
+                        dark:bg-neutral-900 dark:border-white/10 dark:hover:border-white/20"
+                    >
+                        {/* Background Glow Effect */}
+                        <div
+                            className={`absolute -bottom-10 -right-10 h-32 w-32 rounded-full blur-[60px] transition-opacity duration-500 
+                            opacity-50 group-hover:opacity-90 
+                            dark:opacity-50 dark:group-hover:opacity-90 
+                            ${glow}`}
+                        />
+
+                        {/* Content Container */}
+                        <div className="relative z-10 flex items-start justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-zinc-500 dark:text-gray-400 mb-1">
+                                    {title}
+                                </p>
+                                <p className="text-3xl font-bold text-zinc-900 dark:text-white">
+                                    {value}
+                                </p>
+                                {subtitle && (
+                                    <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-2">
+                                        {subtitle}
                                     </p>
-                                    <p className="text-3xl font-bold text-zinc-800 dark:text-white">
-                                        {value}
-                                    </p>
-                                    {subtitle && (
-                                        <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
-                                            {subtitle}
-                                        </p>
-                                    )}
-                                </div>
-                                <div className={`p-3 rounded-xl ${bgColor} bg-opacity-20`}>
-                                    <Icon size={20} className={textColor} />
-                                </div>
+                                )}
+                            </div>
+
+                            {/* Icon Container */}
+                            <div
+                                className="flex h-12 w-12 items-center justify-center rounded-full shadow-inner
+                                bg-zinc-100 border border-zinc-200
+                                dark:bg-white/5 dark:border-white/10"
+                            >
+                                <Icon className={`h-6 w-6 ${textColor}`} />
                             </div>
                         </div>
                     </div>

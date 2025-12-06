@@ -42,7 +42,7 @@ function MyTasksSidebar() {
 
     return (
         <div className="mt-6 px-3">
-            <div onClick={toggleMyTasks} className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-800" >
+            <div onClick={toggleMyTasks} className="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer hover:bg-white dark:hover:bg-zinc-800" >
                 <div className="flex items-center gap-2">
                     <CheckSquareIcon className="w-4 h-4 text-gray-500 dark:text-zinc-400" />
                     <h3 className="text-sm font-medium text-gray-700 dark:text-zinc-300">My Tasks</h3>
@@ -66,7 +66,7 @@ function MyTasksSidebar() {
                             </div>
                         ) : (
                             myTasks.map((task, index) => (
-                                <Link key={index} to={`/taskDetails?projectId=${task.projectId}&taskId=${task.id}`} className="w-full rounded-lg transition-all duration-200 text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-black dark:hover:text-white" >
+                                <Link key={index} to={`/taskDetails?projectId=${task.projectId}&taskId=${task.id}`} className="w-full rounded-lg transition-all duration-200 text-gray-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-800 hover:text-black dark:hover:text-white" >
                                     <div className="flex items-center gap-2 px-3 py-2 w-full min-w-0">
                                         <div className={`w-2 h-2 rounded-full ${getTaskStatusColor(task.status)} flex-shrink-0`} />
                                         <div className="flex-1 min-w-0">

@@ -96,7 +96,7 @@ const ProjectTasks = ({ tasks }) => {
     return (
         <div>
             {/* Filters */}
-            <div className="flex flex-wrap gap-4 mb-4">
+            <div className="flex flex-wrap gap-4 mb-4 ">
                 {["status", "type", "priority", "assignee"].map((name) => {
                     const options = {
                         status: [
@@ -125,7 +125,7 @@ const ProjectTasks = ({ tasks }) => {
                         ],
                     };
                     return (
-                        <select key={name} name={name} onChange={handleFilterChange} className=" border not-dark:bg-white border-zinc-300 dark:border-zinc-800 outline-none px-3 py-1 rounded text-sm text-zinc-900 dark:text-zinc-200" >
+                        <select key={name} name={name} onChange={handleFilterChange} className=" border not-dark:bg-white border-zinc-300 dark:border-zinc-800 outline-none px-3 py-1 rounded text-sm text-zinc-900 dark:text-zinc-200 bg-gray-950" >
                             {options[name].map((opt, idx) => (
                                 <option key={idx} value={opt.value}>{opt.label}</option>
                             ))}

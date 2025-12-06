@@ -77,20 +77,67 @@ export default function ProjectDetail() {
             {/* Info Cards */}
             <div className="grid grid-cols-2 sm:flex flex-wrap gap-6">
                 {[
-                    { label: "Total Tasks", value: tasks.length, color: "text-zinc-900 dark:text-white" },
-                    { label: "Completed", value: tasks.filter((t) => t.status === "DONE").length, color: "text-emerald-700 dark:text-emerald-400" },
-                    { label: "In Progress", value: tasks.filter((t) => t.status === "IN_PROGRESS" || t.status === "TODO").length, color: "text-amber-700 dark:text-amber-400" },
-                    { label: "Team Members", value: project.members?.length || 0, color: "text-blue-700 dark:text-blue-400" },
+                    { 
+                    label: "Total Tasks", 
+                    value: tasks.length, 
+                    iconColor: "text-zinc-900 dark:text-white", 
+                    glow: "bg-purple-500" 
+                    },
+                    { 
+                    label: "Completed", 
+                    value: tasks.filter((t) => t.status === "DONE").length, 
+                    iconColor: "text-emerald-600 dark:text-emerald-400", 
+                    glow: "bg-green-500" 
+                    },
+                    { 
+                    label: "In Progress", 
+                    value: tasks.filter((t) => t.status === "IN_PROGRESS" || t.status === "TODO").length, 
+                    iconColor: "text-amber-600 dark:text-amber-400", 
+                    glow: "bg-amber-500" 
+                    },
+                    { 
+                    label: "Team Members", 
+                    value: project.members?.length || 0, 
+                    iconColor: "text-blue-600 dark:text-blue-400", 
+                    glow: "bg-blue-500" 
+                    },
                 ].map((card, idx) => (
-                    <div key={idx} className=" dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-zinc-200 dark:border-zinc-800 flex justify-between sm:min-w-60 p-4 py-2.5 rounded">
+                    <div 
+                    key={idx} 
+                    className="group relative overflow-hidden rounded-3xl p-6 transition-all sm:min-w-60
+                    bg-white border border-zinc-200 hover:border-zinc-300
+                    dark:bg-neutral-900 dark:border-white/10 dark:hover:border-white/20"
+                    >
+                    {/* Background Glow Effect - Adjusted opacity for Light/Dark */}
+                    <div 
+                        className={`absolute -bottom-10 -right-10 h-32 w-32 rounded-full blur-[60px] transition-opacity duration-500 
+                        opacity-50 group-hover:opacity-90 
+                        dark:opacity-50 dark:group-hover:opacity-90 
+                        ${card.glow}`} 
+                    />
+
+                    {/* Content Container */}
+                    <div className="relative z-10 flex justify-between items-start">
                         <div>
-                            <div className="text-sm text-zinc-600 dark:text-zinc-400">{card.label}</div>
-                            <div className={`text-2xl font-bold ${card.color}`}>{card.value}</div>
+                        <div className="text-sm font-medium text-zinc-500 dark:text-gray-400">
+                            {card.label}
                         </div>
-                        <ZapIcon className={`size-4 ${card.color}`} />
+                        <div className="mt-2 text-3xl font-bold text-zinc-900 dark:text-white">
+                            {card.value}
+                        </div>
+                        </div>
+                        
+                        {/* Icon Container */}
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full shadow-inner
+                        bg-zinc-100 border border-zinc-200
+                        dark:bg-white/5 dark:border-white/10"
+                        >
+                        <ZapIcon className={`h-5 w-5 ${card.iconColor}`} />
+                        </div>
+                    </div>
                     </div>
                 ))}
-            </div>
+                </div>
 
             {/* Tabs */}
             <div>
