@@ -91,7 +91,7 @@ const Navbar = ({ setIsSidebarOpen }) => {
                         <PanelLeft size={20} />
                     </button>
 
-                    {/* --- REPLACED SEARCH BAR --- */}
+                    {/* ---  SEARCH BAR --- */}
                     {/* Rectangular container (rounded-md) */}
                     <div className="relative flex-1 max-w-sm neon-border-wrapper rounded-md">
                         <input
@@ -103,7 +103,7 @@ const Navbar = ({ setIsSidebarOpen }) => {
                             placeholder="Search projects, tasks..."
                             className="pl-6 pr-4 py-2 rounded-md text-sm neon-input-mask"
                         />
-                        {/* Search Icon (Visible when not focused/empty for cleaner look) */}
+                        {/* Search Icon (Visible when not focused/empty ) */}
                         {!isFocused && !searchTerm && (
                             <SearchIcon className={`absolute right-4 top-1/2 -translate-y-1/2 size-4 z-20 pointer-events-none transition-colors ${isDarkMode ? 'text-purple-400' : 'text-slate-400'}`} />
                         )}

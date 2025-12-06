@@ -59,9 +59,9 @@ const ProjectCard = ({ project }) => {
         <Link 
             to={`/projectsDetail?id=${project.id}&tab=tasks`} 
             className={`
-                relative block rounded-2xl p-6 transition-all duration-300 group 
+                relative block rounded-2xl p-5 transition-all duration-300 group 
                 hover:shadow-xl hover:shadow-blue-600 hover:-translate-y-1.5 border
-                ${theme.wrapper}
+                ${theme.wrapper} 
             `}
         >
             {/* Header: Icon Bubble + Priority */}
