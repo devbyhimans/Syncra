@@ -13,10 +13,13 @@ export default function ProjectDetail() {
     const [searchParams, setSearchParams] = useSearchParams();
     const tab = searchParams.get('tab');
     const id = searchParams.get('id');
-
     const navigate = useNavigate();
-    const projects = useSelector((state) => state?.workspace?.currentWorkspace?.projects || []);
 
+
+    const currentWorkspace = useSelector((state) => state?.workspace?.currentWorkspace);
+    const projects = currentWorkspace?.projects || [];
+    const workspaceId = currentWorkspace?.id;
+    
     const [project, setProject] = useState(null);
     const [tasks, setTasks] = useState([]);
     const [showCreateTask, setShowCreateTask] = useState(false);
@@ -47,7 +50,7 @@ export default function ProjectDetail() {
             <div className="p-6 text-center text-zinc-900 dark:text-zinc-200">
                 <p className="text-3xl md:text-5xl mt-40 mb-10">Project not found</p>
                 <button onClick={() => navigate('/projects')} className="mt-4 px-4 py-2 rounded bg-zinc-200 text-zinc-900 hover:bg-zinc-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-600" >
-                    Back to Projects
+                    Back to Projects 
                 </button>
             </div>
         );
@@ -158,7 +161,7 @@ export default function ProjectDetail() {
                 <div className="mt-6">
                     {activeTab === "tasks" && (
                         <div className=" dark:bg-zinc-900/40 rounded max-w-6xl">
-                            <ProjectTasks tasks={tasks} />
+                            <ProjectTasks tasks={tasks} workspaceId={workspaceId}/>
                         </div>
                     )}
                     {activeTab === "analytics" && (

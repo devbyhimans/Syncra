@@ -117,35 +117,32 @@ export const updateProject = async (req , res) => {
 
       const { id, workspaceId, description, name, status, start_date, end_date, progress, priority } = req.body;
 
-      console.log("Workspace ID being used:", workspaceId); // OR whatever variable name you used
-      console.log("Request Body:", req.body);
+    // Check if user has admin role for workspace
+    const workspace = await prisma.workspace.findUnique({
+      where: { id: workspaceId },
+      include: { members: { include: { user: true } } }
+    });
 
-      // Check if user has admin role for workspace
-      const workspace = await prisma.workspace.findUnique({
-        where: { id: workspaceId },
-        include: { members: { include: { user: true } } }
-      });
+    if (!workspace) {
+      return res.status(404).json({ message: "Workspace not found" });
+    }
 
-      if (!workspace) {
-        return res.status(404).json({ message: "Workspace not found" });
+    //find if the user is member and Admin in this workspace
+    if(!workspace.members.some(
+      (member) => member.userId === userId && member.role === "ADMIN")){
+         //if user is not admin then finding the project
+         const existingProject = await prisma.project.findUnique({
+            where:{id}
+         })
+
+         //if project not avilable wiht this id
+         if(!existingProject){
+            return res.status(404).json({ message: "Project not found" });
+         }else if(existingProject.team_lead !== userId){
+            //if project exist but user is not team_lead
+            return res.status(404).json({ message: "You don't have permission to update projects in this workspace" });
+         }
       }
-
-      //find if the user is member and Admin in this workspace
-      if(!workspace.members.some(
-        (member) => member.userId === userId && member.role === "ADMIN")){
-          //if user is not admin then finding the project
-          const existingProject = await prisma.project.findUnique({
-              where:{id}
-          })
-
-          //if project not avilable wiht this id
-          if(!existingProject){
-              return res.status(404).json({ message: "Project not found" });
-          }else if(existingProject.team_lead !== userId){
-              //if project exist but user is not team_lead
-              return res.status(404).json({ message: "You don't have permission to update projects in this workspace" });
-          }
-        }
 
       //now user is ADMIN
       const project = await prisma.project.update({
