@@ -110,78 +110,66 @@ export const createProject = async (req, res) => {
 //------------------------------------------------------------------------------------------------------------------------------------------------//
 
 //update project
-export const updateProject = async (req, res) => {
-    try {
-        const { userId } = req.auth();
+export const updateProject = async (req , res) => {
+   try {
 
-        // 1. Get the Project ID and other data from body
-        const { id, workspaceId, description, name, status, start_date, end_date, progress, priority } = req.body;
+      const { userId } = req.auth();
 
-        if (!id) {
-            return res.status(400).json({ message: "Project ID is required" });
+      const { id, workspaceId, description, name, status, start_date, end_date, progress, priority } = req.body;
+
+      console.log("Workspace ID being used:", workspaceId); // OR whatever variable name you used
+      console.log("Request Body:", req.body);
+
+      // Check if user has admin role for workspace
+      const workspace = await prisma.workspace.findUnique({
+        where: { id: workspaceId },
+        include: { members: { include: { user: true } } }
+      });
+
+      if (!workspace) {
+        return res.status(404).json({ message: "Workspace not found" });
+      }
+
+      //find if the user is member and Admin in this workspace
+      if(!workspace.members.some(
+        (member) => member.userId === userId && member.role === "ADMIN")){
+          //if user is not admin then finding the project
+          const existingProject = await prisma.project.findUnique({
+              where:{id}
+          })
+
+          //if project not avilable wiht this id
+          if(!existingProject){
+              return res.status(404).json({ message: "Project not found" });
+          }else if(existingProject.team_lead !== userId){
+              //if project exist but user is not team_lead
+              return res.status(404).json({ message: "You don't have permission to update projects in this workspace" });
+          }
         }
 
-        // 2. FIND THE PROJECT FIRST
-        // We need this to know which Workspace this project belongs to
-        const existingProject = await prisma.project.findUnique({
-            where: { id }
-        });
+      //now user is ADMIN
+      const project = await prisma.project.update({
+         where:{id},
+         data: {
+            workspaceId,
+            description, 
+            name,
+            status,
+            priority,
+            progress,
+            start_date: start_date ? new Date(start_date) : null,
+            end_date: end_date ? new Date(end_date) : null,
+         }
+      });
 
-        if (!existingProject) {
-            return res.status(404).json({ message: "Project not found" });
-        }
-
-        // 3. Determine the Workspace ID
-        // If the user sent a new workspaceId, use that. Otherwise, use the project's current workspaceId.
-        const targetWorkspaceId = workspaceId || existingProject.workspaceId;
-
-        // 4. Find the Workspace to check permissions
-        const workspace = await prisma.workspace.findUnique({
-            where: { id: targetWorkspaceId },
-            include: { members: true } // Simplified include
-        });
-
-        if (!workspace) {
-            return res.status(404).json({ message: "Workspace not found" });
-        }
-
-        // 5. CHECK PERMISSIONS
-        // Check if user is an ADMIN in the workspace
-        const isAdmin = workspace.members.some(
-            (member) => member.userId === userId && member.role === "ADMIN"
-        );
-
-        // Check if user is the TEAM LEAD of the project
-        const isTeamLead = existingProject.team_lead === userId;
-
-        // If neither, deny access
-        if (!isAdmin && !isTeamLead) {
-            return res.status(403).json({ message: "You don't have permission to update projects in this workspace" });
-        }
-
-        // 6. UPDATE THE PROJECT
-        const project = await prisma.project.update({
-            where: { id },
-            data: {
-                // Only update workspaceId if it was actually provided in the body
-                workspaceId: workspaceId || existingProject.workspaceId,
-                description,
-                name,
-                status,
-                priority,
-                progress,
-                start_date: start_date ? new Date(start_date) : undefined, // undefined leaves it alone if not provided
-                end_date: end_date ? new Date(end_date) : undefined,
-            }
-        });
-
-        res.json({ project, message: "Project updated successfully" });
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: error.code || error.message })
-    }
+      res.json({ project, message: "Project updated successfully" });
+      
+   } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.code || error.message})
+   }
 }
+
 //------------------------------------------------------------------------------------------------------------------------------------------------//
 //add member to project
 export const addMember = async (req, res) => {
