@@ -90,7 +90,7 @@ export default function StatsGrid() {
                     >
                         {/* Background Glow Effect */}
                         <div
-                            className={`absolute -bottom-10 -right-10 h-32 w-32 rounded-full blur-[60px] transition-opacity duration-500 
+                            className={`absolute -bottom-10 -right-10 h-32 w-40 rounded-full blur-[60px] transition-opacity duration-500 
                             opacity-50 group-hover:opacity-90 
                             dark:opacity-50 dark:group-hover:opacity-90 
                             ${glow}`}

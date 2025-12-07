@@ -45,7 +45,7 @@ const Team = () => {
                 {/* Total Members */}
                 <div className="group relative overflow-hidden rounded-3xl p-6 transition-all flex-1 min-w-[250px] bg-white border border-zinc-200 hover:border-zinc-300 dark:bg-neutral-900 dark:border-white/10 dark:hover:border-white/20">
                     {/* Glow Effect */}
-                    <div className="absolute -bottom-10 -right-10 h-32 w-32 rounded-full blur-[60px] transition-opacity duration-500 opacity-50 group-hover:opacity-90 dark:opacity-50 dark:group-hover:opacity-90 bg-blue-500" />
+                    <div className="absolute -bottom-10 -right-10 h-32 w-60 rounded-full blur-[60px] transition-opacity duration-500 opacity-50 group-hover:opacity-90 dark:opacity-50 dark:group-hover:opacity-90 bg-blue-500" />
                     
                     <div className="relative z-10 flex items-center justify-between gap-8 md:gap-22">
                         <div>
@@ -61,7 +61,7 @@ const Team = () => {
                 {/* Active Projects */}
                 <div className="group relative overflow-hidden rounded-3xl p-6 transition-all flex-1 min-w-[250px] bg-white border border-zinc-200 hover:border-zinc-300 dark:bg-neutral-900 dark:border-white/10 dark:hover:border-white/20">
                     {/* Glow Effect */}
-                    <div className="absolute -bottom-10 -right-10 h-32 w-32 rounded-full blur-[60px] transition-opacity duration-500 opacity-50 group-hover:opacity-90 dark:opacity-50 dark:group-hover:opacity-90 bg-emerald-500" />
+                    <div className="absolute -bottom-10 -right-10 h-32 w-60 rounded-full blur-[60px] transition-opacity duration-500 opacity-50 group-hover:opacity-90 dark:opacity-50 dark:group-hover:opacity-90 bg-emerald-500" />
                     
                     <div className="relative z-10 flex items-center justify-between gap-8 md:gap-22">
                         <div>
@@ -79,7 +79,7 @@ const Team = () => {
                 {/* Total Tasks */}
                 <div className="group relative overflow-hidden rounded-3xl p-6 transition-all flex-1 min-w-[250px] bg-white border border-zinc-200 hover:border-zinc-300 dark:bg-neutral-900 dark:border-white/10 dark:hover:border-white/20">
                     {/* Glow Effect */}
-                    <div className="absolute -bottom-10 -right-10 h-32 w-32 rounded-full blur-[60px] transition-opacity duration-500 opacity-50 group-hover:opacity-90 dark:opacity-50 dark:group-hover:opacity-90 bg-purple-500" />
+                    <div className="absolute -bottom-10 -right-10 h-32 w-60 rounded-full blur-[60px] transition-opacity duration-500 opacity-50 group-hover:opacity-90 dark:opacity-50 dark:group-hover:opacity-90 bg-purple-500" />
 
                     <div className="relative z-10 flex items-center justify-between gap-8 md:gap-22">
                         <div>
