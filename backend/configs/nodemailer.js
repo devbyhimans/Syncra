@@ -1,29 +1,28 @@
 import nodemailer from "nodemailer";
-//Function to sent mail using nodemailer
 
-// to get SMTP data we use SMTP provider -- we are using Brevo
+// Function to send mail using nodemailer
+
+// using GMAIL service directly
+console.log("Debug Auth:", process.env.SMTP_USER, process.env.SMTP_PASS);
 const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
+  service: "gmail", 
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: process.env.SMTP_USER, 
+    pass: process.env.SMTP_PASS, 
   },
 });
 
-
-//function to send email
-const sendEmail = async ({to, subject, body}) => {
- 
- const response = await transporter.sendMail({
-  from: process.env.SENDER_EMAIL,
+// Function to send email
+const sendEmail = async ({ to, subject, body }) => {
+  
+  const response = await transporter.sendMail({
+    from: process.env.SMTP_USER, 
     to,
     subject,
-    html:body, 
- })
- return response;
-}
+    html: body,
+  });
 
-export default sendEmail
- 
+  return response;
+};
 
+export default sendEmail;
