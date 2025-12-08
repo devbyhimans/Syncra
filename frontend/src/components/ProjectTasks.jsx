@@ -86,7 +86,7 @@ const ProjectTasks = ({ tasks }) => {
 
             toast.loading("Deleting tasks...");
 
-            await api.post("/api/tasks/delete", {taskId: selectedTasks},{headers: {Authorization: `Bearer ${token}`}})
+            await api.post("/api/tasks/delete", {tasksIds: selectedTasks},{headers: {Authorization: `Bearer ${token}`}})
 
             dispatch(deleteTask(selectedTasks));
 

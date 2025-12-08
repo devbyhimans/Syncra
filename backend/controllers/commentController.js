@@ -23,7 +23,7 @@ export const addComment = async (req, res) => {
     }
 
     // 2. Check if user is a member
-    const member = await prisma.member.findFirst({
+    const member = await prisma.projectMember.findFirst({
       where: {
         projectId: task.projectId,
         userId: userId
@@ -71,6 +71,7 @@ export const getTaskComments = async (req, res) => {
     const comments = await prisma.comment.findMany({
       where: { taskId },
       include:{user: true},
+      orderBy: {createdAt: 'asc'}
     });
 
 

@@ -6,15 +6,16 @@ import { useSelector } from "react-redux";
 const typeIcons = {
     BUG: { icon: Bug, color: "text-red-500 dark:text-red-400" },
     FEATURE: { icon: Zap, color: "text-blue-500 dark:text-blue-400" },
-    TASK: { icon: Square, color: "text-green-500 dark:text-green-400" },
+    TASK: { icon: Square, color: "text-emerald-500 dark:text-emerald-400" },
     IMPROVEMENT: { icon: MessageSquare, color: "text-amber-500 dark:text-amber-400" },
     OTHER: { icon: GitCommit, color: "text-purple-500 dark:text-purple-400" },
 };
 
+// Updated Status Colors to match the "Glass Badge" aesthetic (semi-transparent backgrounds)
 const statusColors = {
-    TODO: "bg-zinc-200 text-zinc-800 dark:bg-zinc-600 dark:text-zinc-200",
-    IN_PROGRESS: "bg-amber-200 text-amber-800 dark:bg-amber-500 dark:text-amber-900",
-    DONE: "bg-emerald-200 text-emerald-800 dark:bg-emerald-500 dark:text-emerald-900",
+    TODO: "bg-zinc-100 text-zinc-700 border-zinc-200 dark:bg-zinc-500/10 dark:text-zinc-300 dark:border-zinc-500/20 border",
+    IN_PROGRESS: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/20 border",
+    DONE: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/20 border",
 };
 
 const RecentActivity = () => {
@@ -22,9 +23,7 @@ const RecentActivity = () => {
     const { currentWorkspace } = useSelector((state) => state.workspace);
 
     const getTasksFromCurrentWorkspace = () => {
-
         if (!currentWorkspace) return;
-
         const tasks = currentWorkspace.projects.flatMap((project) => project.tasks.map((task) => task));
         setTasks(tasks);
     };
@@ -33,62 +32,89 @@ const RecentActivity = () => {
         getTasksFromCurrentWorkspace();
     }, [currentWorkspace]);
 
+    // Theme color for the Glow Effect (Indigo/Violet for Activity)
+    const glowColor = "bg-blue-500";
+
     return (
-        <div className="bg-white dark:bg-zinc-950 dark:bg-gradient-to-br dark:from-zinc-800/70 dark:to-zinc-900/50 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 rounded-lg transition-all overflow-hidden">
-            <div className="border-b border-zinc-200 dark:border-zinc-800 p-4">
-                <h2 className="text-lg text-zinc-800 dark:text-zinc-200">Recent Activity</h2>
-            </div>
+        <div className="
+            group relative overflow-hidden rounded-2xl border border-gray-200 bg-white 
+            dark:border-white/10 dark:bg-zinc-950/40 dark:backdrop-blur-md
+        ">
+            
+            {/* GLOW 2: Top Left */}
+            <div
+                className={`
+                    absolute -top-10 -left-5 h-15 w-190 rounded-full blur-[80px] transition-all duration-500 
+                    opacity-40 group-hover:opacity-70 dark:opacity-40 dark:group-hover:opacity-70
+                    ${glowColor}
+                `}
+            />
 
-            <div className="p-0">
-                {tasks.length === 0 ? (
-                    <div className="p-12 text-center">
-                        <div className="w-16 h-16 mx-auto mb-4 bg-zinc-200 dark:bg-zinc-800 rounded-full flex items-center justify-center">
-                            <Clock className="w-8 h-8 text-zinc-600 dark:text-zinc-500" />
+            {/* Content Container (Relative z-10 to sit above glow) */}
+            <div className="relative z-10">
+                <div className="border-b border-gray-100 dark:border-white/5 p-4">
+                    <h2 className="text-lg font-bold text-gray-800 dark:text-white">Recent Activity</h2>
+                </div>
+
+                <div className="p-0">
+                    {tasks.length === 0 ? (
+                        <div className="p-12 text-center">
+                            <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                <Clock className="w-8 h-8 text-gray-400 dark:text-zinc-500" />
+                            </div>
+                            <p className="text-gray-500 dark:text-zinc-400 font-medium">No recent activity</p>
                         </div>
-                        <p className="text-zinc-600 dark:text-zinc-400">No recent activity</p>
-                    </div>
-                ) : (
-                    <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
-                        {tasks.map((task) => {
-                            const TypeIcon = typeIcons[task.type]?.icon || Square;
-                            const iconColor = typeIcons[task.type]?.color || "text-gray-500 dark:text-gray-400";
+                    ) : (
+                        <div className="divide-y divide-gray-100 dark:divide-white/5">
+                            {tasks.map((task) => {
+                                const TypeIcon = typeIcons[task.type]?.icon || Square;
+                                const iconColor = typeIcons[task.type]?.color || "text-gray-500 dark:text-gray-400";
 
-                            return (
-                                <div key={task.id} className="p-6 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors">
-                                    <div className="flex items-start gap-4">
-                                        <div className="p-2 bg-zinc-200 dark:bg-zinc-800 rounded-lg">
-                                            <TypeIcon className={`w-4 h-4 ${iconColor}`} />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-start justify-between mb-2">
-                                                <h4 className="text-zinc-800 dark:text-zinc-200 truncate">
-                                                    {task.title}
-                                                </h4>
-                                                <span className={`ml-2 px-2 py-1 rounded text-xs ${statusColors[task.status] || "bg-zinc-300 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300"}`}>
-                                                    {task.status.replace("_", " ")}
-                                                </span>
+                                return (
+                                    <div 
+                                        key={task.id} 
+                                        className="
+                                            p-5 transition-colors cursor-pointer
+                                            hover:bg-blue-50 dark:hover:bg-white/5
+                                        "
+                                    >
+                                        <div className="flex items-start gap-4">
+                                            {/* Icon Box */}
+                                            <div className="p-2.5 bg-gray-50 dark:bg-white/5 rounded-xl backdrop-blur-sm shadow-sm">
+                                                <TypeIcon className={`w-4 h-4 ${iconColor}`} />
                                             </div>
-                                            <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
-                                                <span className="capitalize">{task.type.toLowerCase()}</span>
-                                                {task.assignee && (
-                                                    <div className="flex items-center gap-1">
-                                                        <div className="w-4 h-4 bg-zinc-300 dark:bg-zinc-700 rounded-full flex items-center justify-center text-[10px] text-zinc-800 dark:text-zinc-200">
-                                                            {task.assignee.name[0].toUpperCase()}
+
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-start justify-between mb-2">
+                                                    <h4 className="text-sm font-bold text-gray-900 dark:text-white truncate pr-4">
+                                                        {task.title}
+                                                    </h4>
+                                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${statusColors[task.status] || "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"}`}>
+                                                        {task.status.replace("_", " ")}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-zinc-400 font-medium">
+                                                    <span className="capitalize">{task.type.toLowerCase()}</span>
+                                                    {task.assignee && (
+                                                        <div className="flex items-center gap-1.5">
+                                                            <div className="w-4 h-4 bg-gray-200 dark:bg-zinc-700 rounded-full flex items-center justify-center text-[9px] text-gray-700 dark:text-zinc-200 font-bold">
+                                                                {task.assignee.name[0].toUpperCase()}
+                                                            </div>
+                                                            <span>{task.assignee.name}</span>
                                                         </div>
-                                                        {task.assignee.name}
-                                                    </div>
-                                                )}
-                                                <span>
-                                                    {format(new Date(task.updatedAt), "MMM d, h:mm a")}
-                                                </span>
+                                                    )}
+                                                    <span className="opacity-60">
+                                                        {format(new Date(task.updatedAt), "MMM d, h:mm a")}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

@@ -1,55 +1,55 @@
 import { Link } from "react-router-dom";
 
 const ProjectCard = ({ project }) => {
-    // Vibrant pastel gradients with dark text for high contrast
-    // Compacted dimensions (rounded-2xl, standard padding)
-    // Status in a highlighted rectangular box
-    // Enhanced hover elevation
+    // --- UPDATES FOR INTENSITY ---
+    // 1. wrapper: Switched to '-500' shades for maximum brightness/neon effect.
+    // 2. text: Switched to '-400' for more saturated text colors in dark mode.
+    // 3. iconBg: Increased opacity for a punchier look.
     const themes = {
         PLANNING: {
-            wrapper: "bg-gradient-to-br from-purple-200 via-purple-300 to-indigo-300 border-purple-100/50",
-            iconBg: "bg-white/40 text-purple-900 ring-1 ring-white/40",
-            text: "text-slate-900",
-            subText: "text-slate-700",
-            statusBox: "bg-white/60 border border-purple-200/50 text-purple-950",
-            barBg: "bg-purple-900/10",
-            barFill: "bg-purple-900"
+            wrapper: "bg-purple-500", // Brighter neon purple
+            iconBg: "bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400",
+            text: "text-gray-900 dark:text-white",
+            subText: "text-gray-500 dark:text-gray-400",
+            statusBox: "bg-purple-50 border-purple-200 text-purple-700 dark:bg-purple-500/10 dark:border-purple-500/20 dark:text-purple-300",
+            barBg: "bg-gray-100 dark:bg-white/10",
+            barFill: "bg-purple-500"
         },
         ACTIVE: {
-            wrapper: "bg-gradient-to-br from-emerald-200 via-emerald-300 to-teal-300 border-emerald-100/50",
-            iconBg: "bg-white/40 text-emerald-900 ring-1 ring-white/40",
-            text: "text-emerald-950",
-            subText: "text-emerald-800",
-            statusBox: "bg-white/60 border border-emerald-200/50 text-emerald-950",
-            barBg: "bg-emerald-900/10",
-            barFill: "bg-emerald-900"
+            wrapper: "bg-emerald-500", // Brighter neon emerald
+            iconBg: "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400",
+            text: "text-gray-900 dark:text-white",
+            subText: "text-gray-500 dark:text-gray-400",
+            statusBox: "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-500/10 dark:border-emerald-500/20 dark:text-emerald-300",
+            barBg: "bg-gray-100 dark:bg-white/10",
+            barFill: "bg-emerald-500"
         },
         ON_HOLD: {
-            wrapper: "bg-gradient-to-br from-orange-200 via-orange-300 to-amber-300 border-orange-100/50",
-            iconBg: "bg-white/40 text-orange-900 ring-1 ring-white/40",
-            text: "text-orange-950",
-            subText: "text-orange-800",
-            statusBox: "bg-white/60 border border-orange-200/50 text-orange-950",
-            barBg: "bg-orange-900/10",
-            barFill: "bg-orange-900"
+            wrapper: "bg-orange-500", // Brighter neon orange
+            iconBg: "bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400",
+            text: "text-gray-900 dark:text-white",
+            subText: "text-gray-500 dark:text-gray-400",
+            statusBox: "bg-orange-50 border-orange-200 text-orange-700 dark:bg-orange-500/10 dark:border-orange-500/20 dark:text-orange-300",
+            barBg: "bg-gray-100 dark:bg-white/10",
+            barFill: "bg-orange-500"
         },
         COMPLETED: {
-            wrapper: "bg-gradient-to-br from-blue-200 via-blue-300 to-sky-300 border-blue-100/50",
-            iconBg: "bg-white/40 text-blue-900 ring-1 ring-white/40",
-            text: "text-blue-950",
-            subText: "text-blue-800",
-            statusBox: "bg-white/60 border border-blue-200/50 text-blue-950",
-            barBg: "bg-blue-900/10",
-            barFill: "bg-blue-900"
+            wrapper: "bg-blue-500", // Brighter neon blue
+            iconBg: "bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400",
+            text: "text-gray-900 dark:text-white",
+            subText: "text-gray-500 dark:text-gray-400",
+            statusBox: "bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-500/10 dark:border-blue-500/20 dark:text-blue-300",
+            barBg: "bg-gray-100 dark:bg-white/10",
+            barFill: "bg-blue-500"
         },
         CANCELLED: {
-            wrapper: "bg-gradient-to-br from-rose-200 via-rose-300 to-pink-300 border-rose-100/50",
-            iconBg: "bg-white/40 text-rose-900 ring-1 ring-white/40",
-            text: "text-rose-950",
-            subText: "text-rose-800",
-            statusBox: "bg-white/60 border border-rose-200/50 text-rose-950",
-            barBg: "bg-rose-900/10",
-            barFill: "bg-rose-900"
+            wrapper: "bg-rose-500", // Brighter neon rose
+            iconBg: "bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400",
+            text: "text-gray-900 dark:text-white",
+            subText: "text-gray-500 dark:text-gray-400",
+            statusBox: "bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-500/10 dark:border-rose-500/20 dark:text-rose-300",
+            barBg: "bg-gray-100 dark:bg-white/10",
+            barFill: "bg-rose-500"
         },
     };
 
@@ -58,15 +58,33 @@ const ProjectCard = ({ project }) => {
     return (
         <Link 
             to={`/projectsDetail?id=${project.id}&tab=tasks`} 
-            className={`
-                relative block rounded-2xl p-5 transition-all duration-300 group 
-                hover:shadow-xl hover:shadow-blue-600 hover:-translate-y-1.5 border
-                ${theme.wrapper} 
-            `}
+            className="
+                group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 transition-all duration-300 
+                hover:shadow-xl hover:shadow-blue-700 hover:-translate-y-1.5  
+                dark:border-white/10 dark:bg-zinc-950/40 dark:backdrop-blur-md
+            "
         >
+            {/* GLOW 1: Bottom Right - INCREASED OPACITY */}
+            <div
+                className={`
+                    absolute -bottom-10 -right-10 h-40 w-40 rounded-full blur-[80px] transition-all duration-500 
+                    opacity-50 group-hover:opacity-90 dark:opacity-50 dark:group-hover:opacity-90
+                    ${theme.wrapper}
+                `}
+            />
+
+            {/* GLOW 2: Top Left - INCREASED OPACITY */}
+            <div
+                className={`
+                    absolute -top-10 -left-10 h-40 w-40 rounded-full blur-[80px] transition-all duration-500 
+                    opacity-50 group-hover:opacity-90 dark:opacity-50 dark:group-hover:opacity-90
+                    ${theme.wrapper}
+                `}
+            />
+
             {/* Header: Icon Bubble + Priority */}
-            <div className="flex justify-between items-start mb-6">
-                <div className={`h-10 w-10 rounded-full flex items-center justify-center backdrop-blur-sm shadow-sm ${theme.iconBg}`}>
+            <div className="relative z-10 flex justify-between items-start mb-6">
+                <div className={`h-10 w-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-colors shadow-sm ${theme.iconBg}`}>
                    {/* Status Icons */}
                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         {project.status === 'COMPLETED' ? (
@@ -104,15 +122,15 @@ const ProjectCard = ({ project }) => {
                    </svg>
                 </div>
                 
-                <span className={`text-xs font-bold uppercase tracking-wider ${theme.text} opacity-60`}>
+                <span className={`text-xs font-bold uppercase tracking-wider ${theme.subText} opacity-80`}>
                     {project.priority} Priority
                 </span>
             </div>
 
             {/* Content */}
-            <div className="mb-6">
+            <div className="relative z-10 mb-6">
                 {/* Updated Status Box */}
-                <div className={`inline-block px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide mb-3 shadow-sm backdrop-blur-md ${theme.statusBox}`}>
+                <div className={`inline-block px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide mb-3 border backdrop-blur-md ${theme.statusBox}`}>
                     {project.status.replace("_", " ")}
                 </div>
                 <h3 className={`text-xl font-bold leading-tight mb-2 ${theme.text}`}>
@@ -124,19 +142,15 @@ const ProjectCard = ({ project }) => {
             </div>
 
             {/* Footer: Progress */}
-            <div className="flex items-center gap-3">
-                
+            <div className="relative z-10 flex items-center gap-3">
                 <div className={`flex-1 h-1.5 rounded-full ${theme.barBg}`}>
-                    
                     <div 
                         className={`h-full rounded-full ${theme.barFill}`} 
                         style={{ width: `${project.progress || 0}%` }} 
                     />
-                    <span className={`text-xs font-bold ${theme.text} opacity-70`}>Progress</span>
                 </div>
-                <span className={`text-xs font-bold ${theme.text} opacity-70`}>{project.progress || 0}%</span>
+                <span className={`text-xs font-bold ${theme.text} opacity-80`}>{project.progress || 0}%</span>
             </div>
-
         </Link>
     );
 };

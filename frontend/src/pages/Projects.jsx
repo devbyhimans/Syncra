@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { Plus, Search, FolderOpen } from "lucide-react";
 import ProjectCard from "../components/ProjectCard";
 import CreateProjectDialog from "../components/CreateProjectDialog";
+import NeonSearchBar from "../components/NeonSearchBar";
 
 export default function Projects() {
     
@@ -62,10 +63,13 @@ export default function Projects() {
 
             {/* Search and Filters */}
             <div className="flex flex-col md:flex-row gap-4">
-                <div className="relative w-full max-w-sm">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-zinc-400 w-4 h-4" />
-                    <input onChange={(e) => setSearchTerm(e.target.value)} value={searchTerm} className="w-full pl-10 text-sm pr-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-400 focus:border-blue-500 outline-none" placeholder="Search projects..." />
-                </div>
+                <NeonSearchBar 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search projects..."
+                    className="max-w-sm" // Controls the width
+                />
+
                 <select value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })} className="px-3 py-2 rounded-lg border border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white text-sm dark:bg-gray-950" >
                     <option value="ALL">All Status</option>
                     <option value="ACTIVE">Active</option>

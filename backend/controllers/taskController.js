@@ -30,7 +30,7 @@ export const createTask = async (req, res) => {
         title,
         description,
         priority,
-        assigneeId, 
+        assigneeId : assigneeId || userId, 
         status,
         type, 
         due_date: due_date ? new Date(due_date) : null // Ensure it's a Date object
@@ -39,6 +39,7 @@ export const createTask = async (req, res) => {
         assignee: true // Fetching assignee details immediately
       }
     });
+
 
 
     //Triggering the inggest function to send email
