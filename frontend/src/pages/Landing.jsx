@@ -1,11 +1,16 @@
-import React from 'react';
-import { ArrowRight, CheckCircle, Layers, Layout } from 'lucide-react';
+import React, {useState} from 'react';
+import { ArrowRight, CheckCircle, Layers, Layout, X, PlayCircle } from 'lucide-react';
 import { Link, Navigate } from 'react-router-dom';
 import { useUser } from "@clerk/clerk-react";
 import dashboardImg from '../assets/Dashboard.png';
+import { SignIn } from '@clerk/clerk-react';
+import demoVideo from '../assets/demo_video.mp4';
 
 const LandingPage = () => {
   const { isSignedIn, isLoaded } = useUser();
+
+  // New State for Video Modal
+  const [showDemo, setShowDemo] = useState(false);
 
   // 1. If user is already logged in, redirect to Dashboard immediately
   if (isLoaded && isSignedIn) {
@@ -24,7 +29,7 @@ const LandingPage = () => {
         </div>
         
         <div className="flex gap-4">
-          <Link to="/sign-in" 
+          <Link to="/dashboard" 
           className="px-5 py-2 text-gray-600 font-medium hover:text-blue-600 transition-colors">
               Log In
           </Link>
@@ -57,12 +62,13 @@ const LandingPage = () => {
                   Get Started <ArrowRight size={20} />
                 </button>
               </Link>
-              <Link to="/demo"> 
-                 {/* Optional secondary action */}
-                <button className="px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-xl text-lg font-semibold hover:bg-gray-50 transition-all">
-                  View Demo
-                </button>
-              </Link>
+              <button 
+                onClick={() => setShowDemo(true)}
+                className="px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-xl text-lg font-semibold hover:bg-gray-50 transition-all flex items-center gap-2"
+              >
+                <PlayCircle size={20} />
+                View Demo
+              </button>
             </div>
           </div>
 
@@ -161,6 +167,41 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
+
+      {/* VIDEO MODAL OVERLAY */}
+      {showDemo && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          
+          {/* Modal Container */}
+          <div className="relative w-full max-w-5xl bg-black rounded-2xl overflow-hidden shadow-2xl border border-gray-800">
+            
+            {/* Close Button */}
+            <button 
+              onClick={() => setShowDemo(false)}
+              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors backdrop-blur-md"
+            >
+              <X size={24} />
+            </button>
+
+            {/* Video Player */}
+            <video 
+              src={demoVideo} 
+              className="w-full h-auto"
+              controls 
+              autoPlay
+            >
+              Your browser does not support the video tag.
+            </video>
+
+          </div>
+          
+          {/* Click outside to close */}
+          <div 
+            className="absolute inset-0 -z-10" 
+            onClick={() => setShowDemo(false)}
+          ></div>
+        </div>
+      )}
     </div>
   );
 }
