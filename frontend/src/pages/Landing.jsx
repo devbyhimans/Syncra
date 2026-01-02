@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowRight, CheckCircle, Layers, Layout } from 'lucide-react';
 import { Link, Navigate } from 'react-router-dom';
 import { useUser } from "@clerk/clerk-react";
+import dashboardImg from '../assets/Dashboard.png';
 
 const LandingPage = () => {
   const { isSignedIn, isLoaded } = useUser();
@@ -67,35 +68,14 @@ const LandingPage = () => {
           </div>
 
           <div className="flex-1 w-full">
-            {/* CSS-only Mock Dashboard (No images required) */}
-            <div className="relative rounded-2xl shadow-2xl border border-gray-200 bg-white p-2 md:p-4 rotate-1 hover:rotate-0 transition-transform duration-500">
-              <div className="aspect-video bg-gray-50 rounded-xl overflow-hidden flex flex-col border">
-                 <div className="h-12 border-b bg-white flex items-center px-4 gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                 </div>
-                 <div className="flex-1 flex">
-                    <div className="w-16 md:w-48 border-r bg-gray-50/50 p-4 space-y-3 hidden md:block">
-                       <div className="h-2 w-20 bg-gray-200 rounded"></div>
-                       <div className="h-2 w-16 bg-gray-200 rounded"></div>
-                       <div className="h-2 w-24 bg-gray-200 rounded"></div>
-                    </div>
-                    <div className="flex-1 p-6 space-y-4">
-                       <div className="flex justify-between">
-                          <div className="h-8 w-32 bg-gray-200 rounded"></div>
-                          <div className="h-8 w-8 bg-blue-100 rounded-full"></div>
-                       </div>
-                       <div className="grid grid-cols-3 gap-4">
-                          <div className="h-24 bg-blue-50 rounded-lg border border-blue-100"></div>
-                          <div className="h-24 bg-purple-50 rounded-lg border border-purple-100"></div>
-                          <div className="h-24 bg-orange-50 rounded-lg border border-orange-100"></div>
-                       </div>
-                    </div>
-                 </div>
-              </div>
-            </div>
-          </div>
+  <div className="relative rounded-2xl shadow-2xl border border-gray-200 bg-white p-2 md:p-4 rotate-1 hover:rotate-0 transition-transform duration-500">
+    <img 
+      src="dashboardImg" 
+      alt="Dashboard Preview" 
+      className="w-full h-auto rounded-xl border border-gray-100"
+    />
+  </div>
+</div>
         </div>
       </section>
 
@@ -141,7 +121,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Step-by-step guide */}
+      
       <section className="w-full px-8 md:px-20 py-24 bg-gray-50 border-t border-gray-200">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl font-bold text-center mb-16 text-gray-900">Get Started in Minutes</h2>
