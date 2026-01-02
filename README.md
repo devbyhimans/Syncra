@@ -1,7 +1,7 @@
 ```markdown
 # Syncra
 
-![Syncra Banner](screenshot/banner.png)
+![Syncra Banner](screenshots/banner.png)
 
 > **Syncra — Align. Collaborate. Achieve.**
 
@@ -27,17 +27,17 @@ Here's a glimpse of Syncra in action.
 
 | **Dashboard View** | **Projects Overview** |
 | :---: | :---: |
-| ![Dashboard](screenshot/Dashboard.png) | ![Projects](screenshot/projects.png) |
+| ![Dashboard](screenshots/Dashboard.png) | ![Projects](screenshots/projects.png) |
 | *Central hub for all workspaces and activity.* | *Manage and track project status & priorities.* |
 
 | **Task Details** | **Team Management** |
 | :---: | :---: |
-| ![Task Details](screenshot/taskdetails.png) | ![Team Details](screenshot/teamdetails.png) |
+| ![Task Details](screenshots/taskdetails.png) | ![Team Details](screenshots/teamdetails.png) |
 | *In-depth view of task attributes and deadlines.* | *Manage team members, roles, and invites.* |
 
 | **Analytics & Insights** | **Task Discussion** |
 | :---: | :---: |
-| ![Analytics](screenshot/analytics.png) | ![Chatbox](screenshot/chatbox.png) |
+| ![Analytics](screenshots/analytics.png) | ![Chatbox](screenshots/chatbox.png) |
 | *Visual progress tracking and productivity metrics.* | *Real-time contextual collaboration on tasks.* |
 
 ---
@@ -93,7 +93,7 @@ User
                      └── Comment
 
 ```
-![ER Diagram](screenshot/Er_diagram.png)
+![ER Diagram](screenshots/Er_diagram.png)
 
 * **Users** can be members of multiple **Workspaces**.
 * **Workspaces** contain multiple **Projects**.
