@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 // Function to send mail using nodemailer
 
 // using GMAIL service directly
-console.log("Debug Auth:", process.env.SMTP_USER, process.env.SMTP_PASS);
+
 const transporter = nodemailer.createTransport({
   service: "gmail", 
   auth: {
