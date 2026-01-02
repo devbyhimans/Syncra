@@ -24,15 +24,14 @@ const LandingPage = () => {
         </div>
         
         <div className="flex gap-4">
-          <Link to="/sign-in">
-            <button className="px-5 py-2 text-gray-600 font-medium hover:text-blue-600 transition-colors">
+          <Link to="/sign-in" 
+          className="px-5 py-2 text-gray-600 font-medium hover:text-blue-600 transition-colors">
               Log In
-            </button>
           </Link>
-          <Link to="/dashboard">
-            <button className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 transition-all">
+
+          <Link to="/dashboard"
+          className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 transition-all">
               Get Started
-            </button>
           </Link>
         </div>
       </nav>
@@ -68,14 +67,14 @@ const LandingPage = () => {
           </div>
 
           <div className="flex-1 w-full">
-  <div className="relative rounded-2xl shadow-2xl border border-gray-200 bg-white p-2 md:p-4 rotate-1 hover:rotate-0 transition-transform duration-500">
-    <img 
-      src="dashboardImg" 
-      alt="Dashboard Preview" 
-      className="w-full h-auto rounded-xl border border-gray-100"
-    />
-  </div>
-</div>
+          <div className="relative rounded-2xl shadow-2xl border border-gray-200 bg-white p-2 md:p-4 rotate-1 hover:rotate-0 transition-transform duration-500">
+            <img 
+              src={dashboardImg }
+              alt="Dashboard Preview" 
+              className="w-full h-auto rounded-xl border border-gray-100"
+            />
+          </div>
+        </div>
         </div>
       </section>
 
