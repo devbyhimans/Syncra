@@ -1,84 +1,131 @@
-```markdown
-# Syncra
+<p align="center">
+  <img src="https://raw.githubusercontent.com/devbyhimans/Syncra/main/screenshots/banner.png" />
+</p>
 
-![Syncra Banner](screenshots/banner.png)
+<h1 align="center">Syncra</h1>
 
-> **Syncra — Align. Collaborate. Achieve.**
+<p align="center">
+  <b>Align · Collaborate · Achieve</b><br/>
+  <sub>Where teams move in sync — with clarity, control, and confidence.</sub>
+</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/Node.js-v18+-green)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/React-Vite-blue)](https://reactjs.org/)
-[![Prisma](https://img.shields.io/badge/ORM-Prisma-white)](https://www.prisma.io/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)]
+<p align="center">
+  <img src="https://img.shields.io/badge/Node.js-v18+-green" />
+  <img src="https://img.shields.io/badge/React-Vite-blue" />
+  <img src="https://img.shields.io/badge/ORM-Prisma-white" />
+  <img src="https://img.shields.io/badge/License-MIT-yellow" />
+  <img src="https://img.shields.io/badge/PRs-Welcome-brightgreen" />
+</p>
 
 ---
 
 ## 📌 Overview
 
-**Syncra** is a powerful, full-stack **Project Management & Collaboration Platform** designed to streamline teamwork. It provides a centralized workspace for planning, tracking, and executing projects with real-time collaboration and automated workflows.
+**Syncra** is a full-stack **Project Management & Collaboration Platform** designed to help teams plan, track, and execute work efficiently.
 
-Our goal is to reduce chaos, improve visibility, and ensure **no task or deadline is ever missed**.
+It centralizes **workspaces, projects, tasks, communication, analytics, and automation** into a single system—reducing chaos and ensuring **no task or deadline is missed**.
 
 ---
 
 ## 📸 Screenshots
 
-Here's a glimpse of Syncra in action.
+### 📊 Dashboard & Projects
+<p align="center">
+  <img src="https://raw.githubusercontent.com/devbyhimans/Syncra/main/screenshots/Dashboard.png" width="48%" />
+  <img src="https://raw.githubusercontent.com/devbyhimans/Syncra/main/screenshots/projects.png" width="48%" />
+</p>
 
-| **Dashboard View** | **Projects Overview** |
-| :---: | :---: |
-| ![Dashboard](screenshots/Dashboard.png) | ![Projects](screenshots/projects.png) |
-| *Central hub for all workspaces and activity.* | *Manage and track project status & priorities.* |
+### ✅ Tasks & Team Management
+<p align="center">
+  <img src="https://raw.githubusercontent.com/devbyhimans/Syncra/main/screenshots/taskdetails.png" width="48%" />
+  <img src="https://raw.githubusercontent.com/devbyhimans/Syncra/main/screenshots/teamdetails.png" width="48%" />
+</p>
 
-| **Task Details** | **Team Management** |
-| :---: | :---: |
-| ![Task Details](screenshots/taskdetails.png) | ![Team Details](screenshots/teamdetails.png) |
-| *In-depth view of task attributes and deadlines.* | *Manage team members, roles, and invites.* |
-
-| **Analytics & Insights** | **Task Discussion** |
-| :---: | :---: |
-| ![Analytics](screenshots/analytics.png) | ![Chatbox](screenshots/chatbox.png) |
-| *Visual progress tracking and productivity metrics.* | *Real-time contextual collaboration on tasks.* |
+### 📈 Analytics & Collaboration
+<p align="center">
+  <img src="https://raw.githubusercontent.com/devbyhimans/Syncra/main/screenshots/analytics.png" width="48%" />
+  <img src="https://raw.githubusercontent.com/devbyhimans/Syncra/main/screenshots/chatbox.png" width="48%" />
+</p>
 
 ---
 
 ## 🌟 Key Features
 
 ### 🛠 Project & Workflow Management
-- **Workspace-based organization** for different teams or departments.
-- Create projects with specific goals and timelines.
-- Comprehensive **task management**: assignees, priority (🔴🟡🟢), status, and due dates.
+- Workspace-based organization for teams
+- Project creation with defined goals
+- Task management with assignees, priority, status, and due dates
+- Clear ownership and progress visibility
 
 ### 🤝 Collaboration & Communication
-- **Invite team members** directly via email.
-- **Real-time task comments** for contextual discussions.
-- **Role-Based Access Control (RBAC)** for Admins and Members.
+- Invite members via email
+- Real-time task-level comments
+- Role-Based Access Control (Admin / Member)
 
 ### 🤖 Automation & Smart Notifications
-- **Automated Deadline Reminders:** System sends email alerts **24 hours before** a task is due (powered by Inngest cron jobs).
-- Instant notifications for project invites and task assignments via **Nodemailer & Brevo SMTP**.
+- Automated email reminders **24 hours before task deadlines**
+- Background cron jobs using **Inngest**
+- Transactional emails via **Nodemailer + Brevo SMTP**
 
 ### 🎨 Modern User Experience
-- Responsive, interactive UI built with **React (Vite)** and **Tailwind CSS**.
-- Seamless **Dark & Light mode** theming.
-- Secure, hassle-free authentication using **Clerk**.
+- Responsive UI with **React (Vite)** and **Tailwind CSS**
+- Dark & Light mode support
+- Secure authentication powered by **Clerk**
 
 ---
 
-## 🧠 System Design
+## 🧠 System Design (High Level)
 
-This high-level architecture demonstrates how Syncra's components interact to deliver a scalable and reliable experience.
-
-![System Architecture Diagram](https://via.placeholder.com/800x450?text=System+Architecture+Diagram+-+Replace+with+Image)
-
-- **Auth Layer:** Clerk handles secure user authentication and session management.
-- **API Layer:** Express.js REST APIs protected by authentication middleware.
-- **Database Layer:** PostgreSQL with Prisma ORM for type-safe and efficient data querying.
-- **Async Jobs:** Inngest manages background tasks like scheduled email reminders.
-- **Notifications:** Nodemailer integrates with Brevo SMTP for transactional emails.
-- **Frontend:** React (Vite) consumes APIs and renders a dynamic, role-aware UI.
+- **Auth Layer:** Clerk handles authentication and session management
+- **API Layer:** Express.js REST APIs with middleware protection
+- **Database Layer:** PostgreSQL with Prisma ORM
+- **Async Jobs:** Inngest for reminders and background workflows
+- **Notifications:** Nodemailer integrated with Brevo SMTP
+- **Frontend:** React (Vite) with Redux Toolkit
 
 ---
+
+## 🗂 Database Design (ER Diagram)
+
+```mermaid
+erDiagram
+    USER ||--o{ WORKSPACE_MEMBER : belongs_to
+    WORKSPACE ||--o{ WORKSPACE_MEMBER : has
+    WORKSPACE ||--o{ PROJECT : contains
+    PROJECT ||--o{ TASK : has
+    TASK ||--o{ COMMENT : receives
+    USER ||--o{ TASK : assigned_to
+    USER ||--o{ COMMENT : writes
+
+    USER {
+      string id
+      string email
+      string name
+    }
+
+    WORKSPACE {
+      string id
+      string name
+    }
+
+    PROJECT {
+      string id
+      string name
+    }
+
+    TASK {
+      string id
+      string title
+      string status
+      string priority
+      datetime dueDate
+    }
+
+    COMMENT {
+      string id
+      string content
+    }
+```
 
 ## 🗂 Database Design (ER Overview)
 
@@ -93,7 +140,10 @@ User
                      └── Comment
 
 ```
-![ER Diagram](screenshots/Er_diagram.png)
+<p align="center">
+ <img src="https://raw.githubusercontent.com/devbyhimans/Syncra/main/screenshots/Er_diagram.png" width="48%" />
+</p>
+
 
 * **Users** can be members of multiple **Workspaces**.
 * **Workspaces** contain multiple **Projects**.
