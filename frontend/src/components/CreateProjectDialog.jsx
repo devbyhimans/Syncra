@@ -2,8 +2,7 @@ import { useState } from "react";
 import { XIcon } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import api from "../configs/api.js";
-import { useAuth } from "@clerk/clerk-react";
+import { useApi } from "../configs/api.js";
 import { addProject } from "../features/workspaceSlice.js";
 
 
@@ -11,7 +10,7 @@ import { addProject } from "../features/workspaceSlice.js";
 const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
     
     const dispatch = useDispatch();
-    const {getToken} = useAuth();
+    const api = useApi();
 
     const { currentWorkspace } = useSelector((state) => state.workspace);
 
@@ -40,20 +39,10 @@ const CreateProjectDialog = ({ isDialogOpen, setIsDialogOpen }) => {
 
         //making api call to add data to be save in database + Authorization
 
-            // API call with nested 'headers' object
             const { data } = await api.post(
                 "/api/projects",
-                { 
-                    workspaceId: currentWorkspace.id, 
-                    ...formData 
-                },
-                {
-                    // Authenciate the api request
-                    headers: {
-                        Authorization: `Bearer ${await getToken()}`,
-                    }
-                }
-            )
+                { workspaceId: currentWorkspace.id, ...formData }
+            );
 
             //calling the function to add data in State
             dispatch(addProject(data.project))

@@ -35,14 +35,14 @@ const Layout = () => {
     // Initial load of theme
     useEffect(() => {
         dispatch(loadTheme())
-    }, [])
+    }, [dispatch])
 
     // Initial Workspaces load
     useEffect(() => {
         if (isLoaded && user && workspaces.length === 0) {
             dispatch(fetchWorkspaces({ getToken }))
         }
-    }, [user, isLoaded])
+    }, [user, isLoaded, dispatch, getToken]) // eslint-disable-line react-hooks/exhaustive-deps
 
     // ------------------------------------------------------------------
     // AUTO-SELECT LOGIC (Handles Invite Acceptance)

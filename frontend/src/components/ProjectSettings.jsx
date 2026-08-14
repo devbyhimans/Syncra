@@ -3,15 +3,16 @@ import { Plus, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import AddProjectMember from "./AddProjectMember";
 import { useDispatch } from "react-redux";
-import {useAuth} from "@clerk/clerk-react";
+import { useAuth } from "@clerk/clerk-react";
 import { toast } from 'react-hot-toast';
-import api from "../configs/api.js";
+import { useApi } from "../configs/api.js";
 import { fetchWorkspaces } from "../features/workspaceSlice.js";
 
 export default function ProjectSettings({ project }) {
 
     const dispatch = useDispatch();
-    const {getToken} = useAuth();
+    const { getToken } = useAuth(); // Still needed for fetchWorkspaces thunk
+    const api = useApi();
 
     const [formData, setFormData] = useState({
         name: "New Website Launch",
@@ -33,7 +34,8 @@ export default function ProjectSettings({ project }) {
         toast.loading("Saving...")
 
         try {
-            const {data} = await api.put('/api/projects', formData, {headers:   {Authorization: `Bearer ${await getToken()}`}})
+            // Include project.id in the body — backend updateProject requires it
+            const {data} = await api.put('/api/projects', { ...formData, id: project.id, workspaceId: project.workspaceId });
             setIsDialogOpen(false);
             dispatch(fetchWorkspaces({getToken}))
             toast.dismissAll();

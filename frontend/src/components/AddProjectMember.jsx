@@ -2,17 +2,18 @@ import { useState } from "react";
 import { Mail, UserPlus } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { useAuth } from "@clerk/clerk-react";
 import { toast } from 'react-hot-toast';
-import api from "../configs/api.js";
+import { useApi } from "../configs/api.js";
 import { fetchWorkspaces } from "../features/workspaceSlice.js";
+import { useAuth } from "@clerk/clerk-react";
 
 const AddProjectMember = ({ isDialogOpen, setIsDialogOpen }) => {
 
     const [searchParams] = useSearchParams();
 
     const id = searchParams.get('id');
-    const {getToken} = useAuth();
+    const { getToken } = useAuth(); // Still needed to pass to fetchWorkspaces thunk
+    const api = useApi();
     const dispatch = useDispatch();
 
 
@@ -29,7 +30,7 @@ const AddProjectMember = ({ isDialogOpen, setIsDialogOpen }) => {
         e.preventDefault();
         setIsAdding(true);
         try {
-            await api.post(`/api/projects/${project.id}/addMember`,{email},{headers: {Authorization: `Bearer ${await getToken()}`}})
+            await api.post(`/api/projects/${project.id}/addMember`, { email });
             toast.success("Added to project succesfully")
             setIsDialogOpen(false);
             dispatch(fetchWorkspaces({getToken}))

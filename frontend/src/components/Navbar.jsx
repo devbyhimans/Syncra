@@ -2,6 +2,8 @@ import { PanelLeft, MoonIcon, SunIcon } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toggleTheme } from '../features/themeSlice'
 import { UserButton } from '@clerk/clerk-react'
+import CommandPalette from './CommandPalette'
+import NotificationBell from './NotificationBell'
 
 // CSS for both the Avatar Spin and the Text Flow
 const styles = `
@@ -107,6 +109,8 @@ const Navbar = ({ setIsSidebarOpen }) => {
 
                 {/* Right section */}
                 <div className="flex items-center gap-4">
+                    <CommandPalette />
+                    <NotificationBell />
 
                     {/* Theme Toggle (Restored original styling) */}
                     <button 

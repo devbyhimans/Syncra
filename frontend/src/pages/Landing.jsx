@@ -18,53 +18,57 @@ const LandingPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white text-gray-800 font-sans selection:bg-blue-100">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-blue-500/30">
       
       {/* Navbar */}
-      <nav className="w-full px-8 md:px-20 py-6 flex justify-between items-center border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="flex items-center gap-2">
+      <nav className="w-full px-8 md:px-20 py-6 flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl sticky top-0 z-50">
+        <div className="flex items-center gap-3">
           {/* Logo Icon */}
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">S</div>
-          <span className="text-2xl font-bold tracking-tight text-gray-900">Syncra</span>
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/20">S</div>
+          <span className="text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400">Syncra</span>
         </div>
         
-        <div className="flex gap-4">
-          <Link to="/dashboard" 
-          className="px-5 py-2 text-gray-600 font-medium hover:text-blue-600 transition-colors">
+        <div className="flex items-center gap-6">
+          <Link to="/dashboard" className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
               Log In
           </Link>
-
-          <Link to="/dashboard"
-          className="px-5 py-2 bg-blue-600 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 transition-all">
+          <Link to="/dashboard" className="px-6 py-2.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-bold rounded-full shadow-lg hover:scale-105 transition-transform duration-300">
               Get Started
           </Link>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="w-full px-8 md:px-20 py-20 lg:py-32 bg-gradient-to-br from-blue-50 via-white to-purple-50">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
+      <section className="relative w-full px-8 md:px-20 py-24 lg:py-32 overflow-hidden">
+        {/* Ambient Background Glows */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-500/20 dark:bg-blue-500/10 rounded-full blur-[120px] -z-10"></div>
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-[120px] -z-10"></div>
+
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16 relative z-10">
           <div className="flex-1 space-y-8">
-            <div className="inline-block px-4 py-1.5 bg-blue-100 text-blue-700 font-semibold rounded-full text-sm">
-              🚀 Version 2.0 is live
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 font-semibold text-xs uppercase tracking-wider backdrop-blur-md">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+              </span>
+              Version 3.0 is live
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold leading-tight tracking-tight text-gray-900">
-              Manage Projects Effortlessly with <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Syncra</span>
+            <h1 className="text-5xl md:text-7xl font-extrabold leading-tight tracking-tight text-zinc-900 dark:text-white">
+              Manage Projects with <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-purple-500">Syncra</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-xl leading-relaxed">
-              Syncra helps teams collaborate, organize workflows, manage tasks, and track progress—all in one clean and powerful dashboard.
+            <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-xl leading-relaxed">
+              Syncra helps premium teams collaborate, organize workflows, manage tasks, and track real-time analytics in one stunning dashboard.
             </p>
             
-            {/* 2. Link "Get Started" to the Dashboard route */}
-            <div className="flex gap-4 pt-4">
+            <div className="flex flex-wrap gap-4 pt-4">
               <Link to="/dashboard">
-                <button className="px-8 py-4 bg-blue-600 text-white rounded-xl text-lg font-semibold shadow-lg shadow-blue-600/20 hover:shadow-xl hover:-translate-y-1 transition-all flex items-center gap-2">
-                  Get Started <ArrowRight size={20} />
+                <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-base font-bold shadow-xl shadow-blue-500/20 hover:shadow-2xl hover:shadow-blue-500/40 hover:-translate-y-1 transition-all flex items-center gap-2">
+                  Launch App <ArrowRight size={20} />
                 </button>
               </Link>
               <button 
                 onClick={() => setShowDemo(true)}
-                className="px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-xl text-lg font-semibold hover:bg-gray-50 transition-all flex items-center gap-2"
+                className="px-8 py-4 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md text-zinc-800 dark:text-white border border-zinc-200 dark:border-zinc-800 rounded-xl text-base font-bold hover:bg-white dark:hover:bg-zinc-800 transition-all flex items-center gap-2"
               >
                 <PlayCircle size={20} />
                 View Demo
@@ -73,14 +77,15 @@ const LandingPage = () => {
           </div>
 
           <div className="flex-1 w-full">
-          <div className="relative rounded-2xl shadow-2xl border border-gray-200 bg-white p-2 md:p-4 rotate-1 hover:rotate-0 transition-transform duration-500">
-            <img 
-              src={dashboardImg }
-              alt="Dashboard Preview" 
-              className="w-full h-auto rounded-xl border border-gray-100"
-            />
+            <div className="relative rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 p-2 md:p-4 rotate-1 hover:rotate-0 transition-transform duration-500 backdrop-blur-sm">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl pointer-events-none"></div>
+              <img 
+                src={dashboardImg}
+                alt="Dashboard Preview" 
+                className="w-full h-auto rounded-xl border border-zinc-100 dark:border-zinc-800 relative z-10"
+              />
+            </div>
           </div>
-        </div>
         </div>
       </section>
 

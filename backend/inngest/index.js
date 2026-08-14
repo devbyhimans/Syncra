@@ -117,24 +117,28 @@ const syncWorkspaceCreation = inngest.createFunction(
         return;
     }
 
-    await prisma.workspace.create({
-      data:{
+    // Use upsert to be idempotent — Clerk may deliver the same webhook more than once
+    await prisma.workspace.upsert({
+      where: { id: data.id },
+      create: {
         id: data.id,
         name: data.name,
         slug: data.slug,
         ownerId: data.created_by,
-        image_url: data.image_url,
-      }
-    })
+        image_url: data.image_url || "",
+      },
+      update: {
+        name: data.name,
+        slug: data.slug,
+        image_url: data.image_url || "",
+      },
+    });
 
-    //Add creator as ADMIN
-    await prisma.workspaceMember.create({
-      data:{
-        userId: data.created_by,
-        workspaceId: data.id,
-        role: "ADMIN"
-      }
-    })
+    // Add creator as ADMIN — createMany with skipDuplicates for idempotency
+    await prisma.workspaceMember.createMany({
+      data: [{ userId: data.created_by, workspaceId: data.id, role: "ADMIN" }],
+      skipDuplicates: true,
+    });
   }
 )
 
