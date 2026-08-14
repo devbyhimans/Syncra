@@ -8,6 +8,7 @@ import CreateTaskDialog from "../components/CreateTaskDialog";
 import ProjectCalendar from "../components/ProjectCalendar";
 import ProjectTasks from "../components/ProjectTasks";
 
+
 export default function ProjectDetail() {
 
     const [searchParams, setSearchParams] = useSearchParams();

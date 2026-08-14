@@ -2,20 +2,22 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import api from "../configs/api";
 
-export const fetchWorkspaces = createAsyncThunk('workspace/fetchWorkspaces',async ({getToken}) => {
-    try {
-
-        
-        const token = await getToken();
-
-        const {data} = await api.get('/api/workspaces',{headers:{
-            Authorization:`Bearer ${token}`}})
-        return data.workspaces || []
-    } catch (error) {
-        console.log(error?.response?.data?.message || error.message)
-        return []
+export const fetchWorkspaces = createAsyncThunk(
+    'workspace/fetchWorkspaces',
+    async ({ getToken }, { rejectWithValue }) => {
+        try {
+            const token = await getToken();
+            const { data } = await api.get('/api/workspaces', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            return data.workspaces || [];
+        } catch (error) {
+            const message = error?.response?.data?.message || error.message;
+            console.error("fetchWorkspaces failed:", message);
+            return rejectWithValue(message);
+        }
     }
-})
+);
 
 const initialState = {
     workspaces: [],
@@ -53,7 +55,7 @@ const workspaceSlice = createSlice({
             }
         },
         deleteWorkspace: (state, action) => {
-            state.workspaces = state.workspaces.filter((w) => w._id !== action.payload);
+            state.workspaces = state.workspaces.filter((w) => w.id !== action.payload);
         },
         addProject: (state, action) => {
             state.currentWorkspace.projects.push(action.payload);
@@ -63,20 +65,21 @@ const workspaceSlice = createSlice({
             );
         },
         addTask: (state, action) => {
-
+            // Update currentWorkspace — use spread to avoid direct Immer mutation in .map()
             state.currentWorkspace.projects = state.currentWorkspace.projects.map((p) => {
-                
                 if (p.id === action.payload.projectId) {
-                    p.tasks.push(action.payload);
+                    return { ...p, tasks: [...p.tasks, action.payload] };
                 }
                 return p;
             });
 
-            // find workspace and project by id and add task to it
+            // Keep workspaces array in sync
             state.workspaces = state.workspaces.map((w) =>
                 w.id === state.currentWorkspace.id ? {
                     ...w, projects: w.projects.map((p) =>
-                        p.id === action.payload.projectId ? { ...p, tasks: p.tasks.concat(action.payload) } : p
+                        p.id === action.payload.projectId
+                            ? { ...p, tasks: [...p.tasks, action.payload] }
+                            : p
                     )
                 } : w
             );
@@ -103,18 +106,21 @@ const workspaceSlice = createSlice({
             );
         },
         deleteTask: (state, action) => {
-            state.currentWorkspace.projects.map((p) => {
-                p.tasks = p.tasks.filter((t) => !action.payload.includes(t.id));
-                return p;
-            });
+            const taskIdsToDelete = Array.isArray(action.payload) ? action.payload : [action.payload];
+            
+            if (state.currentWorkspace) {
+                state.currentWorkspace.projects = state.currentWorkspace.projects.map((p) => {
+                    p.tasks = p.tasks.filter((t) => !taskIdsToDelete.includes(t.id));
+                    return p;
+                });
+            }
+
             // find workspace and project by id and delete task from it
             state.workspaces = state.workspaces.map((w) =>
-                w.id === state.currentWorkspace.id ? {
-                    ...w, projects: w.projects.map((p) =>
-                        p.id === action.payload.projectId ? {
-                            ...p, tasks: p.tasks.filter((t) => !action.payload.includes(t.id))
-                        } : p
-                    )
+                w.id === state.currentWorkspace?.id ? {
+                    ...w, projects: w.projects.map((p) => ({
+                        ...p, tasks: p.tasks.filter((t) => !taskIdsToDelete.includes(t.id))
+                    }))
                 } : w
             );
         }
@@ -141,8 +147,9 @@ const workspaceSlice = createSlice({
             }
             state.loading=false;
         });
-        builder.addCase(fetchWorkspaces.rejected, (state)=>{
-            state.loading=false;
+        builder.addCase(fetchWorkspaces.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload || "Failed to load workspaces";
         });
     }
 });

@@ -5,8 +5,8 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { deleteTask, updateTask } from "../features/workspaceSlice";
 import { Bug, CalendarIcon, GitCommit, MessageSquare, Square, Trash, XIcon, Zap } from "lucide-react";
-import { useAuth } from "@clerk/clerk-react";
-import api from "../configs/api.js";
+import { useApi } from "../configs/api.js";
+import Papa from "papaparse";
 
 const typeIcons = {
     BUG: { icon: Bug, color: "text-red-600 dark:text-red-400" },
@@ -24,7 +24,7 @@ const priorityTexts = {
 
 const ProjectTasks = ({ tasks }) => {
 
-    const {getToken} = useAuth();
+    const api = useApi(); // Authenticated Axios instance — token attached automatically
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [selectedTasks, setSelectedTasks] = useState([]);
@@ -58,23 +58,22 @@ const ProjectTasks = ({ tasks }) => {
         setFilters((prev) => ({ ...prev, [name]: value }));
     };
 
-    //change the status of the task
+    // Change the status of a task — Optimistic update
     const handleStatusChange = async (taskId, newStatus) => {
+        // 1. Snapshot old task for rollback
+        const oldTask = tasks.find((t) => t.id === taskId);
+        // 2. Optimistic update
+        const optimisticTask = structuredClone(oldTask);
+        optimisticTask.status = newStatus;
+        dispatch(updateTask(optimisticTask));
+
         try {
-            toast.loading("Updating status...");
-            const token = await getToken();
-
-            await api.put(`/api/tasks/${taskId}`, {status: newStatus},{headers: {Authorization: `Bearer ${token}`}})
-
-            let updatedTask = structuredClone(tasks.find((t) => t.id === taskId));
-            updatedTask.status = newStatus;
-            dispatch(updateTask(updatedTask));
-
-            toast.dismissAll();
-            toast.success("Task status updated successfully");
+            await api.put(`/api/tasks/${taskId}`, { status: newStatus });
+            toast.success("Task status updated");
         } catch (error) {
-            toast.dismissAll();
-            toast.error(error?.response?.data?.message || error.message);
+            // 3. Revert on failure
+            dispatch(updateTask(oldTask));
+            toast.error(error?.response?.data?.message || "Failed to update status");
         }
     };
 
@@ -82,20 +81,40 @@ const ProjectTasks = ({ tasks }) => {
         try {
             const confirm = window.confirm("Are you sure you want to delete the selected tasks?");
             if (!confirm) return;
-            const token = await getToken();
 
             toast.loading("Deleting tasks...");
-
-            await api.post("/api/tasks/delete", {tasksIds: selectedTasks},{headers: {Authorization: `Bearer ${token}`}})
+            // DELETE /api/tasks with body (bulk delete) — taskIds matches backend controller
+            await api.delete("/api/tasks", { data: { taskIds: selectedTasks } });
 
             dispatch(deleteTask(selectedTasks));
-
+            setSelectedTasks([]);
             toast.dismissAll();
             toast.success("Tasks deleted successfully");
         } catch (error) {
             toast.dismissAll();
             toast.error(error?.response?.data?.message || error.message);
         }
+    };
+
+    const handleExportCSV = () => {
+        const csvData = filteredTasks.map(t => ({
+            Title: t.title,
+            Type: t.type,
+            Priority: t.priority,
+            Status: t.status,
+            Assignee: t.assignee?.name || t.assignee?.email || "Unassigned",
+            DueDate: format(new Date(t.due_date), "yyyy-MM-dd"),
+        }));
+        
+        const csv = Papa.unparse(csvData);
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `tasks_export_${format(new Date(), "yyyyMMdd")}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     return (
@@ -150,6 +169,10 @@ const ProjectTasks = ({ tasks }) => {
                         <Trash className="size-3" /> Delete
                     </button>
                 )}
+                
+                <button type="button" onClick={handleExportCSV} className="ml-auto px-3 py-1 flex items-center gap-2 rounded border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-sm transition-colors" >
+                    Export CSV
+                </button>
             </div>
 
             {/* Tasks Table */}

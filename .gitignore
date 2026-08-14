@@ -1,2 +1,15 @@
 node_modules
 .env
+docs
+
+# Build output — never commit compiled assets
+frontend/dist
+backend/dist
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.idea

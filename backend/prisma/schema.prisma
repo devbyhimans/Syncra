@@ -1,6 +1,5 @@
 generator client {
     provider        = "prisma-client-js"
-    previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -42,6 +41,14 @@ enum Priority {
     HIGH
 }
 
+enum NotificationType {
+    TASK_ASSIGNED
+    COMMENT_ADDED
+    TASK_DUE_SOON
+    MEMBER_ADDED
+    PROJECT_UPDATED
+}
+
 model User {
     id        String   @id
     name      String
@@ -56,6 +63,9 @@ model User {
     comments        Comment[]
     ownedWorkspaces Workspace[]
     ProjectMember   ProjectMember[]
+    notifications   Notification[]
+    activityLogs    ActivityLog[]
+    subtasks        Subtask[]
 }
 
 model Workspace {
@@ -69,9 +79,10 @@ model Workspace {
     image_url   String   @default("")
     updatedAt   DateTime @updatedAt
 
-    members  WorkspaceMember[]
-    projects Project[]
-    owner    User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+    members      WorkspaceMember[]
+    projects     Project[]
+    owner        User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+    activityLogs ActivityLog[]
 }
 
 model WorkspaceMember {
@@ -83,22 +94,22 @@ model WorkspaceMember {
     user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
     workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
-    @@unique([userId, workspaceId]) // prevent duplicate membership
+    @@unique([userId, workspaceId])
 }
 
 model Project {
-    id          String          @id @default(uuid())
+    id          String        @id @default(uuid())
     name        String
     description String?
-    priority    Priority        @default(MEDIUM)
-    status      ProjectStatus   @default(ACTIVE)
+    priority    Priority      @default(MEDIUM)
+    status      ProjectStatus @default(ACTIVE)
     start_date  DateTime?
     end_date    DateTime?
     team_lead   String
     workspaceId String
-    progress    Int             @default(0)
-    createdAt   DateTime        @default(now())
-    updatedAt   DateTime        @updatedAt
+    progress    Int           @default(0)
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
     members     ProjectMember[]
 
     owner     User      @relation("ProjectOwner", fields: [team_lead], references: [id], onDelete: Cascade)
@@ -113,7 +124,7 @@ model ProjectMember {
     user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-    @@unique([userId, projectId]) // prevent duplicate membership
+    @@unique([userId, projectId])
 }
 
 model Task {
@@ -129,9 +140,43 @@ model Task {
     createdAt   DateTime   @default(now())
     updatedAt   DateTime   @updatedAt
 
-    project  Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-    assignee User      @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: Cascade)
-    comments Comment[]
+    project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    assignee    User        @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: Cascade)
+    comments    Comment[]
+    subtasks    Subtask[]
+    attachments Attachment[]
+
+    // Indexes for common query patterns
+    @@index([projectId, status])   // Board view: fetch tasks filtered by project + status column
+    @@index([assigneeId])          // My Tasks view: fetch all tasks assigned to a user
+    @@index([due_date])            // Due-soon queries and reminder scheduling
+}
+
+model Subtask {
+    id        String   @id @default(uuid())
+    taskId    String
+    title     String
+    done      Boolean  @default(false)
+    createdBy String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    task    Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+    creator User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+}
+
+model Attachment {
+    id           String   @id @default(uuid())
+    taskId       String
+    fileName     String
+    fileUrl      String
+    fileType     String
+    fileSize     Int
+    cloudinaryId String
+    uploadedBy   String
+    createdAt    DateTime @default(now())
+
+    task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
 }
 
 model Comment {
@@ -143,4 +188,40 @@ model Comment {
 
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
     task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+    @@index([taskId]) // Fetch all comments for a task
+}
+
+model Notification {
+    id          String           @id @default(uuid())
+    userId      String
+    type        NotificationType
+    title       String
+    message     String
+    link        String?
+    read        Boolean          @default(false)
+    createdAt   DateTime         @default(now())
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    // Fetch unread notifications for a user, ordered by newest first
+    @@index([userId, read, createdAt])
+}
+
+model ActivityLog {
+    id          String   @id @default(uuid())
+    workspaceId String
+    userId      String
+    action      String
+    entityType  String
+    entityId    String
+    entityTitle String
+    meta        Json     @default("{}")
+    createdAt   DateTime @default(now())
+
+    workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    // Activity feed query: workspace logs ordered by newest first
+    @@index([workspaceId, createdAt])
 }

@@ -1,101 +1,103 @@
 import prisma from "../configs/prisma.js";
 
-// Function to return all workspaces for a user
-export const getUserWorkspaces = async (req, res) => {
-  try {
-    // FIX 1: Remove 'await' and '()' because req.auth is an object
-    const { userId } = req.auth;
-
-    const workspaces = await prisma.workspace.findMany({
-      where: {
-        members: { some: { userId: userId } }
-      },
-      include: {
-        // FIX 2: Changed 'some' to 'include' to actually fetch the user details
-        members: { include: { user: true } },
-        projects: {
-          include: {
-            tasks: {
-              include: {
-                assignee: true,
-                comments: { include: { user: true } }
-              }
-            },
-            members: { include: { user: true } }
-          }
-        },
-        owner: true,
-      },
-    });
-
-    res.json({ workspaces });
-
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: error.code || error.message });
-  }
+// Reusable safe user select — never expose internal fields
+const safeUserSelect = {
+    id: true,
+    name: true,
+    email: true,
+    image: true,
 };
 
+// GET /api/workspaces — return all workspaces for the authenticated user
+export const getUserWorkspaces = async (req, res) => {
+    try {
+        const userId = req.userId; // set by protect middleware
 
-// Function to add member to workspace
+        const workspaces = await prisma.workspace.findMany({
+            where: {
+                members: { some: { userId } }
+            },
+            include: {
+                members: {
+                    include: { user: { select: safeUserSelect } }
+                },
+                projects: {
+                    include: {
+                        tasks: {
+                            include: {
+                                assignee: { select: safeUserSelect },
+                                comments: {
+                                    include: { user: { select: safeUserSelect } },
+                                    orderBy: { createdAt: "asc" },
+                                }
+                            }
+                        },
+                        members: {
+                            include: { user: { select: safeUserSelect } }
+                        }
+                    }
+                },
+                owner: { select: safeUserSelect },
+            },
+        });
+
+        res.json({ workspaces });
+
+    } catch (error) {
+        console.error("getUserWorkspaces error:", error);
+        res.status(500).json({ message: "Failed to fetch workspaces" });
+    }
+};
+
+// POST /api/workspaces/add-member — add a user to a workspace (ADMIN only)
 export const addMember = async (req, res) => {
-  try {
-    // FIX 1: Remove 'await' and '()' here too
-    const { userId } = req.auth;
-    const { email, role, workspaceId, message } = req.body;
+    try {
+        const userId = req.userId; // set by protect middleware
+        const { email, role, workspaceId, message } = req.body;
 
-    // Checking if user exists
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+        // Check the target user exists
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Fetch workspace with its members
+        const workspace = await prisma.workspace.findUnique({
+            where: { id: workspaceId },
+            include: { members: true },
+        });
+
+        if (!workspace) {
+            return res.status(404).json({ message: "Workspace not found" });
+        }
+
+        // Only workspace ADMINs can add members — 403 Forbidden (not 401)
+        const isAdmin = workspace.members.find(
+            (member) => member.userId === userId && member.role === "ADMIN"
+        );
+        if (!isAdmin) {
+            return res.status(403).json({ message: "Only workspace admins can add members" });
+        }
+
+        // Check if the target user is already a member
+        const alreadyMember = workspace.members.find((member) => member.userId === user.id);
+        if (alreadyMember) {
+            return res.status(400).json({ message: "User is already a member of this workspace" });
+        }
+
+        const member = await prisma.workspaceMember.create({
+            data: {
+                userId: user.id,
+                workspaceId,
+                role: role.toUpperCase(),
+                message: message || "",
+            },
+        });
+
+        res.json({ member, message: "Member added successfully" });
+
+    } catch (error) {
+        console.error("addMember error:", error);
+        res.status(500).json({ message: "Failed to add member" });
     }
-
-     // If workspace, role, or email is missing
-    if (!workspaceId || !role) {
-      return res.status(400).json({ message: "Missing required data" });
-    }
-
-    // If the role is neither MEMBER nor ADMIN
-    if (!["ADMIN", "MEMBER"].includes(role.toUpperCase())) {
-      return res.status(400).json({ message: "Invalid role" });
-    }
-
-    // Fetching workspace along with its members
-    const workspace = await prisma.workspace.findUnique({
-      where: { id: workspaceId },
-      include: { members: true },
-    });
-
-    // If workspace does not exist
-    if (!workspace) {
-      return res.status(404).json({ message: "Invalid workspace" });
-    }
-
-    // Checking if the authenticated user is an ADMIN
-    if (!workspace.members.find((member) => member.userId === userId && member.role === "ADMIN")) {
-      return res.status(401).json({ message: "ADMIN access only" });
-    }
-
-    // Checking if the user is already a member
-    // FIX 3: Logic fix - Check if 'user.id' (the person you are adding) is in the list
-    const existingUser = workspace.members.find((member) => member.userId === user.id);
-    if (existingUser) {
-      return res.status(400).json({ message: "Already a member" });
-    }
-
-    // Now adding member after all checks
-    const member = await prisma.workspaceMember.create({
-      data: {
-        userId: user.id, // User being added
-        workspaceId,
-        role: role.toUpperCase(),
-      },
-    });
-
-    res.json({ member, message: "Member added successfully" });
-
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: error.code || error.message });
-  }
 };

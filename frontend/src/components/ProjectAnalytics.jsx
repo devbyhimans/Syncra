@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { CheckCircle, Clock, AlertTriangle, Users, ArrowRightIcon } from "lucide-react";
+import { CheckCircle, Clock, AlertTriangle, Users, ArrowRightIcon, Download } from "lucide-react";
+import Papa from "papaparse";
+import { format } from "date-fns";
 
 // Colors for charts and priorities
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
@@ -83,8 +85,37 @@ const ProjectAnalytics = ({ project, tasks }) => {
         },
     ];
 
+    const handleExport = () => {
+        const reportData = [
+            { Metric: "Project", Value: project?.name },
+            { Metric: "Total Tasks", Value: stats.total },
+            { Metric: "Completed Tasks", Value: stats.completed },
+            { Metric: "In Progress", Value: stats.inProgress },
+            { Metric: "To Do", Value: stats.todo },
+            { Metric: "Overdue", Value: stats.overdue },
+            { Metric: "Completion Rate", Value: `${completionRate}%` },
+            ...priorityData.map(p => ({ Metric: `Priority: ${p.name}`, Value: p.value }))
+        ];
+        
+        const csv = Papa.unparse(reportData);
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `analytics_${project?.name}_${format(new Date(), "yyyyMMdd")}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 relative">
+            <div className="flex justify-end mb-4">
+                <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-sm font-medium rounded-lg transition-colors border border-zinc-200 dark:border-zinc-700">
+                    <Download className="size-4" /> Export Report
+                </button>
+            </div>
+            
             {/* Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {metrics.map((m, i) => (
