@@ -35,14 +35,14 @@ app.use(limiter);
 app.use(express.json({ limit: "1mb" }));
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
-// In production, FRONTEND_URL must be set. A missing env var will fall back to
-// a strict same-origin policy rather than opening the wildcard.
-const allowedOrigin = process.env.FRONTEND_URL;
-if (!allowedOrigin && process.env.NODE_ENV === "production") {
-    console.warn("[WARN] FRONTEND_URL is not set — CORS will reject all cross-origin requests in production.");
-}
+// In production, FRONTEND_URL should be set. We also allow Vercel preview URLs
+// and localhost for seamless development and preview testing.
 app.use(cors({
-    origin: allowedOrigin || (process.env.NODE_ENV !== "production" ? "*" : false),
+    origin: [
+        process.env.FRONTEND_URL,
+        /\.vercel\.app$/,
+        /^http:\/\/localhost:\d+$/
+    ].filter(Boolean),
     credentials: true,
 }));
 
