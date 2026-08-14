@@ -71,6 +71,7 @@ It centralizes **workspaces, projects, tasks, communication, analytics, and auto
 - Responsive UI with **React (Vite)** and **Tailwind CSS**
 - Dark & Light mode support
 - Secure authentication powered by **Clerk**
+- **Public Pages:** Complete with landing, about, contact, privacy, and terms pages.
 
 ---
 
@@ -96,6 +97,10 @@ erDiagram
     TASK ||--o{ COMMENT : receives
     USER ||--o{ TASK : assigned_to
     USER ||--o{ COMMENT : writes
+    TASK ||--o{ SUBTASK : has
+    TASK ||--o{ ATTACHMENT : contains
+    USER ||--o{ NOTIFICATION : receives
+    WORKSPACE ||--o{ ACTIVITY_LOG : logs
 
     USER {
       string id
@@ -133,12 +138,15 @@ The database schema is designed for flexibility and relational integrity.
 
 ```text
 User 
- └── WorkspaceMember
-      └── Workspace
-           └── Project
-                └── Task
-                     └── Comment
-
+ ├── WorkspaceMember
+ │    └── Workspace
+ │         ├── Project
+ │         │    └── Task
+ │         │         ├── Comment
+ │         │         ├── Subtask
+ │         │         └── Attachment
+ │         └── ActivityLog
+ └── Notification
 ```
 <p align="center">
  <img src="https://raw.githubusercontent.com/devbyhimans/Syncra/main/screenshots/Er_diagram.png" width="48%" />
@@ -196,7 +204,11 @@ All APIs are RESTful and secured via Clerk authentication. **Base URL:** `/api/v
 | **Workspaces** | `/workspaces` | Create, manage workspaces and invites. |
 | **Projects** | `/projects` | CRUD operations for projects. |
 | **Tasks** | `/tasks` | Manage task lifecycle, assignments, deadlines. |
+| **Subtasks** | `/subtasks` | Manage subtasks within a parent task. |
 | **Comments** | `/comments` | Post and retrieve comments on tasks. |
+| **Attachments** | `/attachments` | Upload and manage task file attachments. |
+| **Notifications** | `/notifications` | Fetch and mark in-app notifications as read. |
+| **Activity** | `/activity` | Fetch workspace activity audit logs. |
 | **Analytics** | `/analytics` | Fetch project progress and insights. |
 
 ---
@@ -293,8 +305,9 @@ Visit `http://localhost:5173` to use Syncra!
 
 ## 🧭 Future Roadmap
 
-* [ ] **In-App Notifications:** Real-time alerts in addition to emails.
-* [ ] **File Attachment Support:** Upload files to tasks and projects.
+* [x] **In-App Notifications:** Real-time alerts in addition to emails.
+* [x] **File Attachment Support:** Upload files to tasks and projects.
+* [x] **Public Pages:** About, Contact, Privacy Policy, Terms of Service.
 * [ ] **Calendar Integration:** Sync tasks with Google/Outlook calendars.
 * [ ] **AI-Powered Insights:** Smart predictions for project timelines.
 
