@@ -302,8 +302,7 @@ Visit `http://localhost:5173` to use Syncra!
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please fork the repository, create a feature branch, and submit a Pull Request.
-
+Contributions are welcome! Please review our [Contributing Guidelines](CONTRIBUTING.md) before you start. Feel free to fork the repository, create a feature branch, and submit a Pull Request.
 ---
 
 ## 📄 License

@@ -166,9 +166,10 @@ const LandingPage = () => {
           </div>
           <p className="text-gray-500 text-sm">© 2025 Syncra. All rights reserved.</p>
           <div className="flex gap-6 text-gray-500">
-             <a href="#" className="hover:text-blue-600 transition-colors">Privacy</a>
-             <a href="#" className="hover:text-blue-600 transition-colors">Terms</a>
-             <a href="#" className="hover:text-blue-600 transition-colors">Contact</a>
+             <Link to="/about" className="hover:text-blue-600 transition-colors">About</Link>
+             <Link to="/privacy" className="hover:text-blue-600 transition-colors">Privacy</Link>
+             <Link to="/terms" className="hover:text-blue-600 transition-colors">Terms</Link>
+             <Link to="/contact" className="hover:text-blue-600 transition-colors">Contact</Link>
           </div>
         </div>
       </footer>

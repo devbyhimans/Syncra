@@ -7,6 +7,11 @@ import Team from "./pages/Team";
 import ProjectDetails from "./pages/ProjectDetails";
 import TaskDetails from "./pages/TaskDetails";
 import Landing from "./pages/Landing"; // Importing the new page
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Contact from "./pages/Contact";
+import About from "./pages/About";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
     return (
@@ -15,6 +20,10 @@ const App = () => {
             <Routes>
                 {/* 1. PUBLIC ROUTE: The Landing Page is now at the root "/" */}
                 <Route path="/" element={<Landing />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/about" element={<About />} />
 
                 {/* 2. PROTECTED ROUTES: Wrapped in Layout */}
                 {/* We removed path="/" from Layout so it applies logic without forcing a URL prefix */}
@@ -30,8 +39,8 @@ const App = () => {
                     <Route path="/taskDetails" element={<TaskDetails />} />
                 </Route>
 
-                {/* 4. CATCH-ALL: Redirect unknown URLs to Landing Page */}
-                <Route path="*" element={<Navigate to="/" />} />
+                {/* 4. CATCH-ALL: Redirect unknown URLs to NotFound Page */}
+                <Route path="*" element={<NotFound />} />
             </Routes>
         </>
     );
