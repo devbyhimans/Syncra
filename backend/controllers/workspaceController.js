@@ -1,4 +1,9 @@
 import prisma from "../configs/prisma.js";
+import { createClerkClient } from "@clerk/express";
+
+const clerkClient = createClerkClient({
+    secretKey: process.env.CLERK_SECRET_KEY,
+});
 
 // Reusable safe user select — never expose internal fields
 const safeUserSelect = {
@@ -8,10 +13,41 @@ const safeUserSelect = {
     image: true,
 };
 
+/**
+ * ensureUser — Safety net for Clerk↔DB sync.
+ * If the Clerk webhook (user.created) failed or was never delivered,
+ * this ensures the User row exists in Postgres before any query runs.
+ * Called at the top of getUserWorkspaces so the very first API call
+ * after sign-up will self-heal a missing record.
+ */
+const ensureUser = async (userId) => {
+    const existing = await prisma.user.findUnique({ where: { id: userId } });
+    if (existing) return existing;
+
+    // User is missing in DB — fetch from Clerk and create
+    try {
+        const clerkUser = await clerkClient.users.getUser(userId);
+        return await prisma.user.create({
+            data: {
+                id: clerkUser.id,
+                email: clerkUser.emailAddresses?.[0]?.emailAddress || "",
+                name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim(),
+                image: clerkUser.imageUrl || "",
+            },
+        });
+    } catch (err) {
+        console.error("ensureUser: failed to sync user from Clerk:", err.message);
+        return null;
+    }
+};
+
 // GET /api/workspaces — return all workspaces for the authenticated user
 export const getUserWorkspaces = async (req, res) => {
     try {
         const userId = req.userId; // set by protect middleware
+
+        // Safety net: ensure user exists in DB before querying workspaces
+        await ensureUser(userId);
 
         const workspaces = await prisma.workspace.findMany({
             where: {

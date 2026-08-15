@@ -3,8 +3,29 @@ import { ChevronDown, Check, Plus } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentWorkspace } from "../features/workspaceSlice";
 import { useNavigate } from "react-router-dom";
-import { dummyWorkspaces } from "../assets/assets";
 import { useClerk ,useOrganizationList } from "@clerk/clerk-react";
+
+// Fallback avatar when workspace image is missing/broken
+const WorkspaceAvatar = ({ src, name, size = "w-8 h-8" }) => {
+    if (src) {
+        return (
+            <img 
+                src={src} 
+                alt={name} 
+                className={`${size} rounded shadow object-cover`}
+                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+            />
+        );
+    }
+    const initial = (name || "W")[0].toUpperCase();
+    const colors = ["bg-blue-500", "bg-purple-500", "bg-emerald-500", "bg-amber-500", "bg-rose-500"];
+    const color = colors[initial.charCodeAt(0) % colors.length];
+    return (
+        <div className={`${size} ${color} rounded shadow flex items-center justify-center text-white font-semibold text-sm`}>
+            {initial}
+        </div>
+    );
+};
 
 function WorkspaceDropdown() {
 
@@ -50,7 +71,7 @@ function WorkspaceDropdown() {
         <div className="relative m-4" ref={dropdownRef}>
             <button onClick={() => setIsOpen(prev => !prev)} className="w-full flex items-center justify-between p-3 h-auto text-left rounded hover:bg-white dark:hover:bg-zinc-800" >
                 <div className="flex items-center gap-3">
-                    <img src={currentWorkspace?.image_url} alt={currentWorkspace?.name} className="w-8 h-8 rounded shadow" />
+                    <WorkspaceAvatar src={currentWorkspace?.image_url} name={currentWorkspace?.name} />
                     <div className="min-w-0 flex-1">
                         <p className="font-semibold text-gray-800 dark:text-white text-sm truncate">
                             {currentWorkspace?.name || "Select Workspace"}
@@ -69,10 +90,13 @@ function WorkspaceDropdown() {
                         <p className="text-xs text-gray-500 dark:text-zinc-400 uppercase tracking-wider mb-2 px-2">
                             Workspaces
                         </p>
-                        {/* showing list of workspaces where user is a memeber */}
-                        {userMemberships.data.map(({organization}) => (
+                        {/* Only show orgs that exist in BOTH Clerk AND the database.
+                           This prevents stale Clerk orgs (from before a DB reset) from appearing. */}
+                        {userMemberships.data
+                            .filter(({organization}) => workspaces.some(w => w.id === organization.id))
+                            .map(({organization}) => (
                             <div key={organization.id} onClick={() => onSelectWorkspace(organization.id)} className="flex items-center gap-3 p-2 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-800" >
-                                <img src={organization.imageUrl} alt={organization.name} className="w-6 h-6 rounded" />
+                                <WorkspaceAvatar src={organization.imageUrl} name={organization.name} size="w-6 h-6" />
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-gray-800 dark:text-white truncate">
                                         {organization.name}

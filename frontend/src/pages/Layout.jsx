@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Navbar from '../components/Navbar'
 import Sidebar from '../components/Sidebar'
 import { Outlet } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { loadTheme } from '../features/themeSlice'
-import { Loader2Icon } from 'lucide-react'
+import { Loader2Icon, RefreshCwIcon } from 'lucide-react'
 import { 
     useUser, 
     SignIn, 
@@ -14,6 +14,9 @@ import {
     useOrganization 
 } from '@clerk/clerk-react'
 import { fetchWorkspaces } from '../features/workspaceSlice'
+
+const MAX_SYNC_RETRIES = 5;
+const SYNC_RETRY_INTERVAL_MS = 3000;
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -31,6 +34,10 @@ const Layout = () => {
             infinite: true,
         },
     });
+
+    // Sync retry state — handles Clerk↔DB race condition
+    const [syncRetryCount, setSyncRetryCount] = useState(0);
+    const syncTimerRef = useRef(null);
 
     // Initial load of theme
     useEffect(() => {
@@ -74,6 +81,35 @@ const Layout = () => {
         }
     }, [isOrgListLoaded, userMemberships, setActive, workspaces.length, organization]);
 
+    // ------------------------------------------------------------------
+    // SYNC RETRY LOGIC — Handles Clerk↔DB race condition
+    // When Clerk has memberships but DB returned 0 workspaces, retry
+    // fetching workspaces to give the backend webhook time to sync.
+    // ------------------------------------------------------------------
+    useEffect(() => {
+        const hasClerkMemberships = userMemberships?.data?.length > 0;
+        const needsRetry = !loading && isLoaded && user && hasClerkMemberships && workspaces.length === 0 && syncRetryCount < MAX_SYNC_RETRIES;
+
+        if (needsRetry) {
+            syncTimerRef.current = setTimeout(() => {
+                console.log(`[Sync Retry ${syncRetryCount + 1}/${MAX_SYNC_RETRIES}] Re-fetching workspaces...`);
+                setSyncRetryCount(prev => prev + 1);
+                dispatch(fetchWorkspaces({ getToken }));
+            }, SYNC_RETRY_INTERVAL_MS);
+        }
+
+        return () => {
+            if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+        };
+    }, [loading, isLoaded, user, userMemberships, workspaces.length, syncRetryCount, dispatch, getToken]);
+
+    // Reset retry count when workspaces are successfully loaded
+    useEffect(() => {
+        if (workspaces.length > 0 && syncRetryCount > 0) {
+            setSyncRetryCount(0);
+        }
+    }, [workspaces.length, syncRetryCount]);
+
 
     // ------------------------------------------------------------------
     // RENDER LOGIC
@@ -108,7 +144,51 @@ const Layout = () => {
         )
     }
 
-    // 4. Main Layout
+    // 4. SYNCING STATE — Clerk has memberships but DB hasn't caught up yet
+    if (user && workspaces.length === 0 && hasClerkMemberships) {
+        return (
+            <div className='flex flex-col items-center justify-center h-screen bg-white dark:bg-zinc-950 gap-4'>
+                {syncRetryCount < MAX_SYNC_RETRIES ? (
+                    <>
+                        <Loader2Icon className="size-8 text-blue-500 animate-spin" />
+                        <div className="text-center">
+                            <h2 className="text-lg font-semibold text-zinc-800 dark:text-white">
+                                Setting up your workspace…
+                            </h2>
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                                Syncing your data. This may take a few seconds.
+                            </p>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <RefreshCwIcon className="size-8 text-zinc-400" />
+                        <div className="text-center">
+                            <h2 className="text-lg font-semibold text-zinc-800 dark:text-white">
+                                Workspace sync incomplete
+                            </h2>
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 max-w-md">
+                                Your organizations in Clerk couldn't be matched with the database. 
+                                This can happen if the database was reset. Please contact the workspace admin 
+                                or create a new organization.
+                            </p>
+                        </div>
+                        <button 
+                            onClick={() => {
+                                setSyncRetryCount(0);
+                                dispatch(fetchWorkspaces({ getToken }));
+                            }}
+                            className="mt-2 px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                        >
+                            Retry
+                        </button>
+                    </>
+                )}
+            </div>
+        )
+    }
+
+    // 5. Main Layout
     return (
         <div className="flex bg-white dark:bg-zinc-950 text-gray-900 dark:text-slate-100">
             <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />

@@ -18,14 +18,20 @@ const syncUserCreation = inngest.createFunction(
         return; 
     }
 
-    await prisma.user.create({
-      data: {
+    // Use upsert for idempotency — Clerk may re-deliver the same webhook
+    await prisma.user.upsert({
+      where: { id: data.id },
+      create: {
         id: data.id,
-        // Use optional chaining (?.) to prevent crashes if fields are missing
         email: data.email_addresses?.[0]?.email_address,
         name: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
         image: data.image_url,
-      }
+      },
+      update: {
+        email: data.email_addresses?.[0]?.email_address,
+        name: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
+        image: data.image_url,
+      },
     });
 
     return { success: true };
@@ -209,12 +215,14 @@ const syncWorkspaceMemberCreation = inngest.createFunction(
         return;
     }
 
-    await prisma.workspaceMember.create({
-      data:{
+    // Use createMany with skipDuplicates for idempotency — prevents crashes on re-delivery
+    await prisma.workspaceMember.createMany({
+      data: [{
         userId: data.user_id,
         workspaceId: data.organization_id,
         role: String(data.role_name).toUpperCase(),
-      }
+      }],
+      skipDuplicates: true,
     })
   }
 );
